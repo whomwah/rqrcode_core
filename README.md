@@ -1,3 +1,5 @@
+[![Codeship Status for whomwah/rqrcode_core](https://app.codeship.com/projects/d2dc8c80-6e88-0137-bf46-6a53d28fd6d4/status?branch=master)](https://app.codeship.com/projects/347347)
+
 # RQRCodeCore
 
 `rqrcode_core` is a library for encoding QR codes in pure Ruby. It has a simple interface with all the standard qrcode options. It was adapted from the Javascript library by Kazuhiko Arase.
