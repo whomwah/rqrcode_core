@@ -1,5 +1,4 @@
-require 'rqrcode'
+$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
+require "rqrcode_core"
 
-require 'minitest/spec'
-require 'minitest/autorun'
-
+require "minitest/autorun"
