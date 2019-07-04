@@ -29,7 +29,7 @@ Or install it yourself as:
 
     $ gem install rqrcode_core
 
-## Usage
+## Basic Usage
 
 ```ruby
 $ require 'rqrcode_core'
@@ -49,15 +49,44 @@ x xxx x  xxxxx x       xx x xxx x
 ## Doing your own rendering
 
 ```ruby
-$ require 'rqrcode_core'
+require 'rqrcode_core'
+
 qr = RQRCodeCore::QRCode.new('my string to generate', size: 4, level: :h)
 qr.modules.each do |row|
   row.each do |col|
-    print col ? "#" : " "
+    print col ? '#' : ' '
   end
 
   print "\n"
 end
+```
+
+### Options
+
+The library expects a string to be parsed in, other args are optional.
+
+```
+string - the string you wish to encode
+
+size   - the size of the qrcode (default 4)
+
+level  - the error correction level, can be:
+  * Level :l 7%  of code can be restored
+  * Level :m 15% of code can be restored
+  * Level :q 25% of code can be restored
+  * Level :h 30% of code can be restored (default :h)
+
+mode   - the mode of the qrcode (defaults to alphanumeric or byte_8bit, depending on the input data):
+  * :number
+  * :alphanumeric
+  * :byte_8bit
+  * :kanji
+```
+
+#### Example
+
+```
+qr = RQRCodeCore::QRCode.new('hello world', size: 1, level: :m, mode: :alphanumeric)
 ```
 
 ## Development
