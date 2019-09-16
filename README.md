@@ -1,4 +1,4 @@
-[![Codeship Status for whomwah/rqrcode_core](https://app.codeship.com/projects/d2dc8c80-6e88-0137-bf46-6a53d28fd6d4/status?branch=master)](https://app.codeship.com/projects/347347)
+![](https://github.com/whomwah/rqrcode_core/workflows/rqrcode_core/badge.svg)
 
 # RQRCodeCore
 

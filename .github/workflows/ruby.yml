@@ -1,4 +1,4 @@
-name: Ruby
+name: rqrcode_core
 
 on: [push]
 
