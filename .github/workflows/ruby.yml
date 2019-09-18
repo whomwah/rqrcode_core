@@ -1,6 +1,6 @@
 name: rqrcode_core
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
