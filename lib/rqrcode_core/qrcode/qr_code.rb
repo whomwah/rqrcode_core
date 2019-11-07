@@ -233,6 +233,9 @@ module RQRCodeCore
       end
       @modules[row][col]
     end
+    alias_method :dark?, :checked?
+    extend Gem::Deprecate
+    deprecate :dark?, :checked?, 2020, 1
 
     # This is a public method that returns the QR Code you have
     # generated as a string. It will not be able to be read
