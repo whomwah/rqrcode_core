@@ -174,7 +174,7 @@ module RQRCodeCore
         raise QRCodeArgumentError, "The passed data is #{string.class}, not String"
       end
 
-      options               = args.extract_options!
+      options               = extract_options!(args)
       level                 = (options[:level] || :h).to_sym
 
       if !QRERRORCORRECTLEVEL.has_key?(level)
@@ -256,7 +256,7 @@ module RQRCodeCore
     #
 
     def to_s( *args )
-      options                = args.extract_options!
+      options                = extract_options!(args)
       dark                   = options[:dark] || options[:true] || 'x'
       light                  = options[:light] || options[:false] || ' '
       quiet_zone_size        = options[:quiet_zone_size] || 0
@@ -461,7 +461,7 @@ module RQRCodeCore
             if @modules[row][ col - c ].nil?
               dark = false
               if byte_index < data.size && !data[byte_index].nil?
-                dark = (( (data[byte_index]).rszf( bit_index ) & 1) == 1 )
+                dark = (( QRUtil.rszf(data[byte_index], bit_index) & 1) == 1 )
               end
               mask = QRUtil.get_mask( mask_pattern, row, col - c )
               dark = !dark if mask
@@ -491,6 +491,10 @@ module RQRCodeCore
       ver = max_size_array.index{|i| i >= l}
       raise QRCodeRunTimeError,"code length overflow. (#{l} digits > any version capacity)" unless ver
       ver + 1
+    end
+
+    def extract_options!(arr) #:nodoc:
+      arr.last.is_a?(::Hash) ? arr.pop : {}
     end
 
     def QRCode.count_max_data_bits(rs_blocks)

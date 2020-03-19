@@ -73,6 +73,11 @@ module RQRCodeCore
       (( data << 10 ) | d) ^ G15_MASK
     end
 
+    def QRUtil.rszf( num, count )
+      # zero fill right shift
+      (num >> count) & ((2 ** ((num.size * 8) - count))-1)
+    end
+
     def QRUtil.get_bch_version(data)
       d = data << 12
       while QRUtil.get_bch_digit(d) - QRUtil.get_bch_digit(G18) >= 0
@@ -86,7 +91,7 @@ module RQRCodeCore
 
       while data != 0
         digit = digit + 1
-        data = (data).rszf(1)
+        data = QRUtil.rszf( data, 1 )
       end
 
       digit
