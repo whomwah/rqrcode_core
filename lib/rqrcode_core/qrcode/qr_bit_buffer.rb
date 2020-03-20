@@ -16,13 +16,13 @@ module RQRCodeCore
 
     def get( index )
       buf_index = (index / 8).floor
-      (( (@buffer[buf_index]).rszf(7 - index % 8)) & 1) == 1
+      (( QRUtil.rszf(@buffer[buf_index], 7 - index % 8)) & 1) == 1
     end
 
 
     def put( num, length )
       ( 0...length ).each do |i|
-        put_bit((((num).rszf(length - i - 1)) & 1) == 1)
+        put_bit(((QRUtil.rszf(num, length - i - 1)) & 1) == 1)
       end
     end
 
@@ -39,7 +39,7 @@ module RQRCodeCore
       end
 
       if bit
-        @buffer[buf_index] |= ((0x80).rszf(@length % 8))
+        @buffer[buf_index] |= (QRUtil.rszf(0x80, @length % 8))
       end
 
       @length += 1
