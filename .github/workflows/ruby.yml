@@ -15,7 +15,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        ruby_version: [2.5, 2.6, 3.0]
+        ruby_version:
+          - ruby-2.5
+          - ruby-2.6
+          - ruby-2.7
+          - ruby-3.0
         os: [ubuntu-latest]
 
     steps:
