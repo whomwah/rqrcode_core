@@ -58,70 +58,70 @@ module RQRCodeCore
       QRMODE[:mode_number] => [10, 12, 14],
       QRMODE[:mode_alpha_numk] => [9, 11, 13],
       QRMODE[:mode_8bit_byte] => [8, 16, 16],
-      QRMODE[:mode_kanji] => [8, 10, 12],
+      QRMODE[:mode_kanji] => [8, 10, 12]
     }
 
-    def QRUtil.max_size
+    def self.max_size
       PATTERN_POSITION_TABLE.count
     end
 
-    def QRUtil.get_bch_format_info( data )
+    def self.get_bch_format_info(data)
       d = data << 10
       while QRUtil.get_bch_digit(d) - QRUtil.get_bch_digit(G15) >= 0
         d ^= (G15 << (QRUtil.get_bch_digit(d) - QRUtil.get_bch_digit(G15)))
       end
-      (( data << 10 ) | d) ^ G15_MASK
+      ((data << 10) | d) ^ G15_MASK
     end
 
-    def QRUtil.rszf( num, count )
+    def self.rszf(num, count)
       # zero fill right shift
-      (num >> count) & ((2 ** ((num.size * 8) - count))-1)
+      (num >> count) & ((2**((num.size * 8) - count)) - 1)
     end
 
-    def QRUtil.get_bch_version(data)
+    def self.get_bch_version(data)
       d = data << 12
       while QRUtil.get_bch_digit(d) - QRUtil.get_bch_digit(G18) >= 0
         d ^= (G18 << (QRUtil.get_bch_digit(d) - QRUtil.get_bch_digit(G18)))
       end
-      ( data << 12 ) | d
+      (data << 12) | d
     end
 
-    def QRUtil.get_bch_digit( data )
+    def self.get_bch_digit(data)
       digit = 0
 
       while data != 0
-        digit = digit + 1
-        data = QRUtil.rszf( data, 1 )
+        digit += 1
+        data = QRUtil.rszf(data, 1)
       end
 
       digit
     end
 
-    def QRUtil.get_pattern_positions(version)
+    def self.get_pattern_positions(version)
       PATTERN_POSITION_TABLE[version - 1]
     end
 
-    def QRUtil.get_mask( mask_pattern, i, j )
+    def self.get_mask(mask_pattern, i, j)
       if mask_pattern > QRMASKCOMPUTATIONS.size
         raise QRCodeRunTimeError, "bad mask_pattern: #{mask_pattern}"
       end
 
-      return QRMASKCOMPUTATIONS[mask_pattern].call(i, j)
+      QRMASKCOMPUTATIONS[mask_pattern].call(i, j)
     end
 
-    def QRUtil.get_error_correct_polynomial( error_correct_length )
-      a = QRPolynomial.new( [1], 0 )
+    def self.get_error_correct_polynomial(error_correct_length)
+      a = QRPolynomial.new([1], 0)
 
-      ( 0...error_correct_length ).each do |i|
-        a = a.multiply( QRPolynomial.new( [1, QRMath.gexp(i)], 0 ) )
+      (0...error_correct_length).each do |i|
+        a = a.multiply(QRPolynomial.new([1, QRMath.gexp(i)], 0))
       end
 
       a
     end
 
-    def QRUtil.get_length_in_bits(mode, version)
+    def self.get_length_in_bits(mode, version)
       if !QRMODE.value?(mode)
-          raise QRCodeRunTimeError, "Unknown mode: #{mode}"
+        raise QRCodeRunTimeError, "Unknown mode: #{mode}"
       end
 
       if version > 40
@@ -139,10 +139,10 @@ module RQRCodeCore
         macro_version = 2
       end
 
-      return BITS_FOR_MODE[mode][macro_version]
+      BITS_FOR_MODE[mode][macro_version]
     end
 
-    def QRUtil.get_lost_points(modules)
+    def self.get_lost_points(modules)
       demerit_points = 0
 
       demerit_points += QRUtil.demerit_points_1_same_color(modules)
@@ -150,10 +150,10 @@ module RQRCodeCore
       demerit_points += QRUtil.demerit_points_3_dangerous_patterns(modules)
       demerit_points += QRUtil.demerit_points_4_dark_ratio(modules)
 
-      return demerit_points
+      demerit_points
     end
 
-    def QRUtil.demerit_points_1_same_color(modules)
+    def self.demerit_points_1_same_color(modules)
       demerit_points = 0
       module_count = modules.size
 
@@ -163,10 +163,10 @@ module RQRCodeCore
           same_count = 0
           dark = modules[row][col]
 
-          ( -1..1 ).each do |r|
+          (-1..1).each do |r|
             next if row + r < 0 || module_count <= row + r
 
-            ( -1..1 ).each do |c|
+            (-1..1).each do |c|
               next if col + c < 0 || module_count <= col + c
               next if r == 0 && c == 0
               if dark == modules[row + r][col + c]
@@ -181,10 +181,10 @@ module RQRCodeCore
         end
       end
 
-      return demerit_points
+      demerit_points
     end
 
-    def QRUtil.demerit_points_2_full_blocks(modules)
+    def self.demerit_points_2_full_blocks(modules)
       demerit_points = 0
       module_count = modules.size
 
@@ -196,16 +196,16 @@ module RQRCodeCore
           count += 1 if modules[row + 1][col]
           count += 1 if modules[row][col + 1]
           count += 1 if modules[row + 1][col + 1]
-          if (count == 0 || count == 4)
+          if count == 0 || count == 4
             demerit_points += DEMERIT_POINTS_2
           end
         end
       end
 
-      return demerit_points
+      demerit_points
     end
 
-    def QRUtil.demerit_points_3_dangerous_patterns(modules)
+    def self.demerit_points_3_dangerous_patterns(modules)
       demerit_points = 0
       module_count = modules.size
 
@@ -213,12 +213,12 @@ module RQRCodeCore
       modules.each do |row|
         (module_count - 6).times do |col_idx|
           if row[col_idx] &&
-            !row[col_idx + 1] &&
-            row[col_idx + 2] &&
-            row[col_idx + 3] &&
-            row[col_idx + 4] &&
-            !row[col_idx + 5] &&
-            row[col_idx + 6]
+              !row[col_idx + 1] &&
+              row[col_idx + 2] &&
+              row[col_idx + 3] &&
+              row[col_idx + 4] &&
+              !row[col_idx + 5] &&
+              row[col_idx + 6]
             demerit_points += DEMERIT_POINTS_3
           end
         end
@@ -227,21 +227,21 @@ module RQRCodeCore
       (0...module_count).each do |col|
         (0...(module_count - 6)).each do |row|
           if modules[row][col] &&
-            !modules[row + 1][col] &&
-            modules[row + 2][col] &&
-            modules[row + 3][col] &&
-            modules[row + 4][col] &&
-            !modules[row + 5][col] &&
-            modules[row + 6][col]
+              !modules[row + 1][col] &&
+              modules[row + 2][col] &&
+              modules[row + 3][col] &&
+              modules[row + 4][col] &&
+              !modules[row + 5][col] &&
+              modules[row + 6][col]
             demerit_points += DEMERIT_POINTS_3
           end
         end
       end
 
-      return demerit_points
+      demerit_points
     end
 
-    def QRUtil.demerit_points_4_dark_ratio(modules)
+    def self.demerit_points_4_dark_ratio(modules)
       # level 4
       dark_count = modules.reduce(0) do |sum, col|
         sum + col.count(true)
@@ -250,8 +250,7 @@ module RQRCodeCore
       ratio = dark_count / (modules.size * modules.size)
       ratio_delta = (100 * ratio - 50).abs / 5
 
-      demerit_points = ratio_delta * DEMERIT_POINTS_4
-      return demerit_points
+      ratio_delta * DEMERIT_POINTS_4
     end
   end
 end

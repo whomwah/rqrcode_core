@@ -34,7 +34,7 @@ Or install it yourself as:
 ```ruby
 $ require 'rqrcode_core'
 $ qr = RQRCodeCore::QRCode.new('my string to generate', size: 4, level: :h)
-$ puts qr.to_s
+$ puts qr.to_s # default (dark: "x", light: " ")
 ```
 
 Output:
@@ -91,7 +91,30 @@ qr = RQRCodeCore::QRCode.new('hello world', size: 1, level: :m, mode: :alphanume
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+### Tests
+
+You can run the test suite using:
+
+```
+$ ./bin/setup
+$ rake test
+```
+
+or try the project from the console with:
+
+```
+$ ./bin/console
+```
+
+### Linting
+
+The project uses [standardrb](https://github.com/testdouble/standard) and can be run with:
+
+```
+$ ./bin/setup
+$ rake standard STANDARDOPTS="--format progress" # to check
+$ rake standard:fix # to fix
+```
 
 ## Contributing
 
