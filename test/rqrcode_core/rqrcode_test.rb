@@ -69,8 +69,8 @@ class RQRCodeCore::BaseTest < Minitest::Test
   def test_to_s
     qr = RQRCodeCore::QRCode.new("duncan", size: 1)
     assert_equal "xxxxxxx xx x  xxxxxxx\n", qr.to_s[0..21]
-    assert_equal "qqqqqqqnqqnqnnqqqqqqq\n", qr.to_s(true: "q", false: "n")[0..21]
-    assert_equal "@@@@@@@ @@ @  @@@@@@@\n", qr.to_s(true: "@")[0..21]
+    assert_equal "qqqqqqqnqqnqnnqqqqqqq\n", qr.to_s(dark: "q", light: "n")[0..21]
+    assert_equal "@@@@@@@ @@ @  @@@@@@@\n", qr.to_s(dark: "@")[0..21]
   end
 
   def test_auto_alphanumeric
@@ -145,6 +145,6 @@ class RQRCodeCore::BaseTest < Minitest::Test
 
   def test_utf8
     qr = RQRCodeCore::QRCode.new("тест")
-    assert_equal qr.modules, MATRIX_UTF8_RU_test
+    assert_equal qr.modules, MATRIX_UTF8_RU_TEST
   end
 end

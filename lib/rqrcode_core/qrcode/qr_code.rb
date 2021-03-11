@@ -241,7 +241,7 @@ module RQRCodeCore
     # generated as a string. It will not be able to be read
     # in this format by a QR Code reader, but will give you an
     # idea if the final outout. It takes two optional args
-    # +:true+ and +:false+ which are there for you to choose
+    # +:dark+ and +:light+ which are there for you to choose
     # how the output looks. Here's an example of it's use:
     #
     #  instance.to_s =>
@@ -448,7 +448,7 @@ module RQRCodeCore
       (@module_count - 1).step(1, -2) do |col|
         col -= 1 if col <= 6
 
-        while true
+        loop do
           (0...2).each do |c|
             if @modules[row][col - c].nil?
               dark = false
@@ -489,89 +489,91 @@ module RQRCodeCore
       arr.last.is_a?(::Hash) ? arr.pop : {}
     end
 
-    def self.count_max_data_bits(rs_blocks)
-      max_data_bytes = rs_blocks.reduce(0) do |sum, rs_block|
-        sum + rs_block.data_count
-      end
-
-      max_data_bytes * 8
-    end
-
-    def self.create_data(version, error_correct_level, data_list) #:nodoc:
-      rs_blocks = QRRSBlock.get_rs_blocks(version, error_correct_level)
-      max_data_bits = QRCode.count_max_data_bits(rs_blocks)
-      buffer = QRBitBuffer.new(version)
-
-      data_list.write(buffer)
-      buffer.end_of_message(max_data_bits)
-
-      if buffer.get_length_in_bits > max_data_bits
-        raise QRCodeRunTimeError, "code length overflow. (#{buffer.get_length_in_bits}>#{max_data_bits}). (Try a larger size!)"
-      end
-
-      buffer.pad_until(max_data_bits)
-
-      QRCode.create_bytes(buffer, rs_blocks)
-    end
-
-    def self.create_bytes(buffer, rs_blocks) #:nodoc:
-      offset = 0
-      max_dc_count = 0
-      max_ec_count = 0
-      dcdata = Array.new(rs_blocks.size)
-      ecdata = Array.new(rs_blocks.size)
-
-      rs_blocks.each_with_index do |rs_block, r|
-        dc_count = rs_block.data_count
-        ec_count = rs_block.total_count - dc_count
-        max_dc_count = [max_dc_count, dc_count].max
-        max_ec_count = [max_ec_count, ec_count].max
-
-        dcdata_block = Array.new(dc_count)
-        dcdata_block.size.times do |i|
-          dcdata_block[i] = 0xff & buffer.buffer[i + offset]
+    class << self
+      def count_max_data_bits(rs_blocks)
+        max_data_bytes = rs_blocks.reduce(0) do |sum, rs_block|
+          sum + rs_block.data_count
         end
-        dcdata[r] = dcdata_block
 
-        offset += dc_count
-        rs_poly = QRUtil.get_error_correct_polynomial(ec_count)
-        raw_poly = QRPolynomial.new(dcdata[r], rs_poly.get_length - 1)
-        mod_poly = raw_poly.mod(rs_poly)
+        max_data_bytes * 8
+      end
 
-        ecdata_block = Array.new(rs_poly.get_length - 1)
-        ecdata_block.size.times do |i|
-          mod_index = i + mod_poly.get_length - ecdata_block.size
-          ecdata_block[i] = mod_index >= 0 ? mod_poly.get(mod_index) : 0
+      def create_data(version, error_correct_level, data_list) #:nodoc:
+        rs_blocks = QRRSBlock.get_rs_blocks(version, error_correct_level)
+        max_data_bits = QRCode.count_max_data_bits(rs_blocks)
+        buffer = QRBitBuffer.new(version)
+
+        data_list.write(buffer)
+        buffer.end_of_message(max_data_bits)
+
+        if buffer.get_length_in_bits > max_data_bits
+          raise QRCodeRunTimeError, "code length overflow. (#{buffer.get_length_in_bits}>#{max_data_bits}). (Try a larger size!)"
         end
-        ecdata[r] = ecdata_block
+
+        buffer.pad_until(max_data_bits)
+
+        QRCode.create_bytes(buffer, rs_blocks)
       end
 
-      total_code_count = rs_blocks.reduce(0) do |sum, rs_block|
-        sum + rs_block.total_count
-      end
+      def create_bytes(buffer, rs_blocks) #:nodoc:
+        offset = 0
+        max_dc_count = 0
+        max_ec_count = 0
+        dcdata = Array.new(rs_blocks.size)
+        ecdata = Array.new(rs_blocks.size)
 
-      data = Array.new(total_code_count)
-      index = 0
+        rs_blocks.each_with_index do |rs_block, r|
+          dc_count = rs_block.data_count
+          ec_count = rs_block.total_count - dc_count
+          max_dc_count = [max_dc_count, dc_count].max
+          max_ec_count = [max_ec_count, ec_count].max
 
-      max_dc_count.times do |i|
-        rs_blocks.size.times do |r|
-          if i < dcdata[r].size
-            data[index] = dcdata[r][i]
-            index += 1
+          dcdata_block = Array.new(dc_count)
+          dcdata_block.size.times do |i|
+            dcdata_block[i] = 0xff & buffer.buffer[i + offset]
+          end
+          dcdata[r] = dcdata_block
+
+          offset += dc_count
+          rs_poly = QRUtil.get_error_correct_polynomial(ec_count)
+          raw_poly = QRPolynomial.new(dcdata[r], rs_poly.get_length - 1)
+          mod_poly = raw_poly.mod(rs_poly)
+
+          ecdata_block = Array.new(rs_poly.get_length - 1)
+          ecdata_block.size.times do |i|
+            mod_index = i + mod_poly.get_length - ecdata_block.size
+            ecdata_block[i] = mod_index >= 0 ? mod_poly.get(mod_index) : 0
+          end
+          ecdata[r] = ecdata_block
+        end
+
+        total_code_count = rs_blocks.reduce(0) do |sum, rs_block|
+          sum + rs_block.total_count
+        end
+
+        data = Array.new(total_code_count)
+        index = 0
+
+        max_dc_count.times do |i|
+          rs_blocks.size.times do |r|
+            if i < dcdata[r].size
+              data[index] = dcdata[r][i]
+              index += 1
+            end
           end
         end
-      end
 
-      max_ec_count.times do |i|
-        rs_blocks.size.times do |r|
-          if i < ecdata[r].size
-            data[index] = ecdata[r][i]
-            index += 1
+        max_ec_count.times do |i|
+          rs_blocks.size.times do |r|
+            if i < ecdata[r].size
+              data[index] = ecdata[r][i]
+              index += 1
+            end
           end
         end
-      end
 
-      data
+        data
+      end
     end
   end
 end
