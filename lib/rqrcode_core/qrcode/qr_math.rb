@@ -6,19 +6,19 @@ module RQRCodeCore
       exp_table = Array.new(256)
       log_table = Array.new(256)
 
-      ( 0...8 ).each do |i|
+      (0...8).each do |i|
         exp_table[i] = 1 << i
       end
 
-      ( 8...256 ).each do |i|
+      (8...256).each do |i|
         exp_table[i] = exp_table[i - 4] \
           ^ exp_table[i - 5] \
           ^ exp_table[i - 6] \
           ^ exp_table[i - 8]
       end
 
-      ( 0...255 ).each do |i|
-        log_table[exp_table[i] ] = i
+      (0...255).each do |i|
+        log_table[exp_table[i]] = i
       end
 
       EXP_TABLE = exp_table
@@ -27,18 +27,17 @@ module RQRCodeCore
 
     class << self
       def glog(n)
-        raise QRCodeRunTimeError, "glog(#{n})" if ( n < 1 )
+        raise QRCodeRunTimeError, "glog(#{n})" if n < 1
         LOG_TABLE[n]
       end
 
-
       def gexp(n)
         while n < 0
-          n = n + 255
+          n += 255
         end
 
         while n >= 256
-          n = n - 255
+          n -= 255
         end
 
         EXP_TABLE[n]

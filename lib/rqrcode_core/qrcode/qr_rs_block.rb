@@ -4,7 +4,7 @@ module RQRCodeCore
   class QRRSBlock
     attr_reader :data_count, :total_count
 
-    def initialize( total_count, data_count )
+    def initialize(total_count, data_count)
       @total_count = total_count
       @data_count = data_count
     end
@@ -258,7 +258,7 @@ module RQRCodeCore
 
     ]
 
-    def QRRSBlock.get_rs_blocks(version, error_correct_level)
+    def self.get_rs_blocks(version, error_correct_level)
       rs_block = QRRSBlock.get_rs_block_table(version, error_correct_level)
 
       if rs_block.nil?
@@ -269,20 +269,20 @@ module RQRCodeCore
       length = rs_block.size / 3
       list = []
 
-      ( 0...length ).each do |i|
+      (0...length).each do |i|
         count = rs_block[i * 3 + 0]
         total_count = rs_block[i * 3 + 1]
         data_count = rs_block[i * 3 + 2]
 
-        ( 0...count ).each do |j|
-          list << QRRSBlock.new( total_count, data_count )
+        (0...count).each do |j|
+          list << QRRSBlock.new(total_count, data_count)
         end
       end
 
       list
     end
 
-    def QRRSBlock.get_rs_block_table(version, error_correct_level)
+    def self.get_rs_block_table(version, error_correct_level)
       case error_correct_level
       when QRERRORCORRECTLEVEL[:l]
         QRRSBlock::RS_BLOCK_TABLE[(version - 1) * 4 + 0]
@@ -292,8 +292,6 @@ module RQRCodeCore
         QRRSBlock::RS_BLOCK_TABLE[(version - 1) * 4 + 2]
       when QRERRORCORRECTLEVEL[:h]
         QRRSBlock::RS_BLOCK_TABLE[(version - 1) * 4 + 3]
-      else
-        nil
       end
     end
   end
