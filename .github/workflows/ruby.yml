@@ -10,7 +10,7 @@ on:
     - master
 
 jobs:
-  test:
+  Build:
     strategy:
       fail-fast: false
       matrix:
@@ -23,7 +23,10 @@ jobs:
       with:
         ruby-version: ${{ matrix.ruby }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-    - run: |
+    - name: Run Tests
+      run: |
        gem install bundler
        bundle install --jobs 4 --retry 3
        bundle exec rake test
+    - name: StandardRB Check
+      run: bundle exec standardrb --format progress
