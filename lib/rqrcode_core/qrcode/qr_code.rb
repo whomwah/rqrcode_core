@@ -257,8 +257,8 @@ module RQRCodeCore
 
     def to_s(*args)
       options = extract_options!(args)
-      dark = options[:dark] || options[:true] || "x"
-      light = options[:light] || options[:false] || " "
+      dark = options[:dark] || "x"
+      light = options[:light] || " "
       quiet_zone_size = options[:quiet_zone_size] || 0
 
       rows = []
