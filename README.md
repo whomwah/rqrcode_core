@@ -68,7 +68,7 @@ The library expects a string to be parsed in, other args are optional.
 ```
 string - the string you wish to encode
 
-size   - the size of the qrcode (defaults to smallest size needed to encode the string)
+size   - the size (Integer) of the qrcode (defaults to smallest size needed to encode the string)
 
 level  - the error correction level, can be:
   * Level :l 7%  of code can be restored
