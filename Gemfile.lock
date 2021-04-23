@@ -41,7 +41,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  bundler (>= 2.0)
+  bundler (~> 2.0)
   minitest (~> 5.0)
   rake (~> 13.0)
   rqrcode_core!
