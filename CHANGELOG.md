@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [1.0.0] - 2021-04-23
+
+### Changed
 
 - README updated
 - Small documentation clarification [@smnscp](https://github.com/smnscp).
@@ -23,5 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - fix `required_ruby_version` for Ruby 3 support
 
-[unreleased]: https://github.com/whomwah/rqrcode_core/compare/v0.2.0...HEAD
+[unreleased]: https://github.com/whomwah/rqrcode_core/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/whomwah/rqrcode_core/compare/v0.2.0...v1.0.0
 [0.2.0]: https://github.com/whomwah/rqrcode_core/compare/v0.1.2...v0.2.0
