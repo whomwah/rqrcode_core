@@ -1,4 +1,4 @@
-![](https://github.com/whomwah/rqrcode_core/workflows/rqrcode_core/badge.svg)
+![](https://github.com/whomwah/rqrcode_core/actions/workflows/ruby.yml/badge.svg)
 
 # RQRCodeCore
 
@@ -18,7 +18,7 @@ Features:
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'rqrcode_core'
+gem "rqrcode_core"
 ```
 
 And then execute:
@@ -32,9 +32,9 @@ Or install it yourself as:
 ## Basic Usage
 
 ```ruby
-$ require 'rqrcode_core'
-$ qr = RQRCodeCore::QRCode.new('my string to generate', size: 4, level: :h)
-$ puts qr.to_s # default (dark: "x", light: " ")
+$ require "rqrcode_core"
+$ qr = RQRCodeCore::QRCode.new("https://kyan.com")
+$ puts qr.to_s
 ```
 
 Output:
@@ -49,12 +49,12 @@ x xxx x  xxxxx x       xx x xxx x
 ## Doing your own rendering
 
 ```ruby
-require 'rqrcode_core'
+require "rqrcode_core"
 
-qr = RQRCodeCore::QRCode.new('my string to generate', size: 4, level: :h)
-qr.modules.each do |row|
+qr = RQRCodeCore::QRCode.new("https://kyan.com")
+qr.rows.each do |row|
   row.each do |col|
-    print col ? '#' : ' '
+    print col ? "#" : " "
   end
 
   print "\n"
@@ -68,7 +68,7 @@ The library expects a string to be parsed in, other args are optional.
 ```
 string - the string you wish to encode
 
-size   - the size (Integer) of the qrcode (defaults to smallest size needed to encode the string)
+size   - the size (integer) of the qrcode (defaults to smallest size needed to encode the string)
 
 level  - the error correction level, can be:
   * Level :l 7%  of code can be restored
@@ -85,8 +85,8 @@ mode   - the mode of the qrcode (defaults to alphanumeric or byte_8bit, dependin
 
 #### Example
 
-```
-qr = RQRCodeCore::QRCode.new('hello world', size: 1, level: :m, mode: :alphanumeric)
+```ruby
+RQRCodeCore::QRCode.new("http://kyan.com", size: 1, level: :m, mode: :alphanumeric)
 ```
 
 ## Development
@@ -97,7 +97,7 @@ You can run the test suite using:
 
 ```
 $ ./bin/setup
-$ rake test
+$ rake
 ```
 
 or try the project from the console with:
@@ -112,8 +112,8 @@ The project uses [standardrb](https://github.com/testdouble/standard) and can be
 
 ```
 $ ./bin/setup
-$ rake standard STANDARDOPTS="--format progress" # to check
-$ rake standard:fix # to fix
+$ rake standard # check
+$ rake standard:fix # fix
 ```
 
 ## Contributing
