@@ -256,7 +256,7 @@ module RQRCodeCore
       [34, 54, 24, 34, 55, 25],
       [20, 45, 15, 61, 46, 16]
 
-    ]
+    ].freeze
 
     def self.get_rs_blocks(version, error_correct_level)
       rs_block = QRRSBlock.get_rs_block_table(version, error_correct_level)

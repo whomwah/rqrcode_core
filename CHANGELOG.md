@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add a basic benchmark file
 - Add standardRB badge
+- Add `.freeze` on `CONST` lookup objects
 
 ## [1.0.0] - 2021-04-23
 

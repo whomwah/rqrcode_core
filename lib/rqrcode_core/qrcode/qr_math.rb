@@ -21,8 +21,8 @@ module RQRCodeCore
         log_table[exp_table[i]] = i
       end
 
-      const_set(:EXP_TABLE, exp_table)
-      const_set(:LOG_TABLE, log_table)
+      const_set(:EXP_TABLE, exp_table).freeze
+      const_set(:LOG_TABLE, log_table).freeze
     }
 
     class << self

@@ -43,7 +43,7 @@ module RQRCodeCore
       [6, 32, 58, 84, 110, 136, 162],
       [6, 26, 54, 82, 110, 138, 166],
       [6, 30, 58, 86, 114, 142, 170]
-    ]
+    ].freeze
 
     G15 = 1 << 10 | 1 << 8 | 1 << 5 | 1 << 4 | 1 << 2 | 1 << 1 | 1 << 0
     G18 = 1 << 12 | 1 << 11 | 1 << 10 | 1 << 9 | 1 << 8 | 1 << 5 | 1 << 2 | 1 << 0
@@ -59,7 +59,7 @@ module RQRCodeCore
       QRMODE[:mode_alpha_numk] => [9, 11, 13],
       QRMODE[:mode_8bit_byte] => [8, 16, 16],
       QRMODE[:mode_kanji] => [8, 10, 12]
-    }
+    }.freeze
 
     def self.max_size
       PATTERN_POSITION_TABLE.count
