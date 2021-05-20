@@ -314,7 +314,7 @@ module RQRCodeCore
 
     private
 
-    def prepare_common_patterns
+    def prepare_common_patterns #:nodoc:
       @modules.map! { |row| Array.new(@module_count) }
 
       place_position_probe_pattern(0, 0)
@@ -490,7 +490,7 @@ module RQRCodeCore
     end
 
     class << self
-      def count_max_data_bits(rs_blocks)
+      def count_max_data_bits(rs_blocks) #:nodoc:
         max_data_bytes = rs_blocks.reduce(0) do |sum, rs_block|
           sum + rs_block.data_count
         end

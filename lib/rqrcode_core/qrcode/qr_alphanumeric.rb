@@ -9,7 +9,9 @@ module RQRCodeCore
 
   class QRAlphanumeric
     def initialize(data)
-      raise QRCodeArgumentError, "Not a alpha numeric uppercase string `#{data}`" unless QRAlphanumeric.valid_data?(data)
+      unless QRAlphanumeric.valid_data?(data)
+        raise QRCodeArgumentError, "Not a alpha numeric uppercase string `#{data}`"
+      end
 
       @data = data
     end
