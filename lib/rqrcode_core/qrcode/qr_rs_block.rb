@@ -10,7 +10,7 @@ module RQRCodeCore
     end
 
     # http://www.thonky.com/qr-code-tutorial/error-correction-table/
-    RQRCodeCore::QRRSBlock::RS_BLOCK_TABLE = [
+    RS_BLOCK_TABLE = [
       # L
       # M
       # Q
