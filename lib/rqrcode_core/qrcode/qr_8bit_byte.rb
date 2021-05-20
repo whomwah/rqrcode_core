@@ -2,10 +2,7 @@
 
 module RQRCodeCore
   class QR8bitByte
-    attr_reader :mode
-
     def initialize(data)
-      @mode = QRMODE[:mode_8bit_byte]
       @data = data
     end
 

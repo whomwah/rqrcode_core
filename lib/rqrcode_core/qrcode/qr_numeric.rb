@@ -4,11 +4,7 @@ module RQRCodeCore
   NUMERIC = %w[0 1 2 3 4 5 6 7 8 9].freeze
 
   class QRNumeric
-    attr_reader :mode
-
     def initialize(data)
-      @mode = QRMODE[:mode_number]
-
       raise QRCodeArgumentError, "Not a numeric string `#{data}`" unless QRNumeric.valid_data?(data)
 
       @data = data

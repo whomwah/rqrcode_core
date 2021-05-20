@@ -8,11 +8,7 @@ module RQRCodeCore
   ].freeze
 
   class QRAlphanumeric
-    attr_reader :mode
-
     def initialize(data)
-      @mode = QRMODE[:mode_alpha_numk]
-
       raise QRCodeArgumentError, "Not a alpha numeric uppercase string `#{data}`" unless QRAlphanumeric.valid_data?(data)
 
       @data = data
