@@ -81,6 +81,14 @@ class RQRCodeCore::BaseTest < Minitest::Test
     assert_equal "xxxxxxx xxx   xxxxxxx\n", qr.to_s[0..21]
   end
 
+  def test_manual_alphanumeric
+    assert_equal :mode_alpha_numk, RQRCodeCore::QRCode.new("DUNCAN", mode: :alphanumeric).mode
+
+    assert_raises(RQRCodeCore::QRCodeArgumentError) {
+      RQRCodeCore::QRCode.new("Duncan", mode: :alphanumeric)
+    }
+  end
+
   def test_auto_numeric
     # When digit only automatically uses numeric mode, default ecc level is :h
     digits = RQRCodeCore::QRCode.new("1" * 17) # Version 1, numeric mode, ECC h
