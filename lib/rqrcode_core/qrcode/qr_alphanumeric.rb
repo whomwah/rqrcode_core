@@ -14,11 +14,8 @@ module RQRCodeCore
       @data = data
     end
 
-    def self.valid_data? data
-      data.each_char do |s|
-        return false if ALPHANUMERIC.index(s).nil?
-      end
-      true
+    def self.valid_data?(data)
+      (data.chars - ALPHANUMERIC).empty?
     end
 
     def write(buffer)

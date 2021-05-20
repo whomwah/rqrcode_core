@@ -10,11 +10,8 @@ module RQRCodeCore
       @data = data
     end
 
-    def self.valid_data? data
-      data.each_char do |s|
-        return false if NUMERIC.index(s).nil?
-      end
-      true
+    def self.valid_data?(data)
+      (data.chars - NUMERIC).empty?
     end
 
     def write(buffer)
