@@ -14,10 +14,6 @@ module RQRCodeCore
       @data = data
     end
 
-    def get_length
-      @data.size
-    end
-
     def self.valid_data? data
       data.each_char do |s|
         return false if ALPHANUMERIC.index(s).nil?
@@ -26,7 +22,7 @@ module RQRCodeCore
     end
 
     def write(buffer)
-      buffer.alphanumeric_encoding_start(get_length)
+      buffer.alphanumeric_encoding_start(@data.size)
 
       @data.size.times do |i|
         if i % 2 == 0

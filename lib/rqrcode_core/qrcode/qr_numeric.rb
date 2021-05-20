@@ -10,10 +10,6 @@ module RQRCodeCore
       @data = data
     end
 
-    def get_length
-      @data.size
-    end
-
     def self.valid_data? data
       data.each_char do |s|
         return false if NUMERIC.index(s).nil?
@@ -22,7 +18,7 @@ module RQRCodeCore
     end
 
     def write(buffer)
-      buffer.numeric_encoding_start(get_length)
+      buffer.numeric_encoding_start(@data.size)
 
       @data.size.times do |i|
         if i % 3 == 0
