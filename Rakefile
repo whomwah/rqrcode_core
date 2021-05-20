@@ -9,6 +9,11 @@ begin
   end
 
   task default: [:test, "standard:fix"]
+
+  desc "Run a simple benchmark (x1000)"
+  task :benchmark do
+    ruby "test/benchmark.rb"
+  end
 rescue LoadError
   # no standard/rspec available
 end
