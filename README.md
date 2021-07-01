@@ -1,4 +1,5 @@
 ![](https://github.com/whomwah/rqrcode_core/actions/workflows/ruby.yml/badge.svg)
+[![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
 # RQRCodeCore
 

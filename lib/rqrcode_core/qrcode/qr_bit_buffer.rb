@@ -64,8 +64,8 @@ module RQRCodeCore
 
       # Pad with padding code words
       while get_length_in_bits < prefered_size
-        put(QRBitBuffer::PAD0, 8)
-        put(QRBitBuffer::PAD1, 8) if get_length_in_bits < prefered_size
+        put(PAD0, 8)
+        put(PAD1, 8) if get_length_in_bits < prefered_size
       end
     end
 

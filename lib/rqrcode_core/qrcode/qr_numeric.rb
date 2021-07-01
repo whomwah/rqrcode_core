@@ -1,32 +1,21 @@
 # frozen_string_literal: true
 
 module RQRCodeCore
-  NUMERIC = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].freeze
+  NUMERIC = %w[0 1 2 3 4 5 6 7 8 9].freeze
 
   class QRNumeric
-    attr_reader :mode
-
     def initialize(data)
-      @mode = QRMODE[:mode_number]
-
       raise QRCodeArgumentError, "Not a numeric string `#{data}`" unless QRNumeric.valid_data?(data)
 
       @data = data
     end
 
-    def get_length
-      @data.size
-    end
-
-    def self.valid_data? data
-      data.each_char do |s|
-        return false if NUMERIC.index(s).nil?
-      end
-      true
+    def self.valid_data?(data)
+      (data.chars - NUMERIC).empty?
     end
 
     def write(buffer)
-      buffer.numeric_encoding_start(get_length)
+      buffer.numeric_encoding_start(@data.size)
 
       @data.size.times do |i|
         if i % 3 == 0

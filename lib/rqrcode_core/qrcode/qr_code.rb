@@ -5,20 +5,20 @@ module RQRCodeCore
     mode_number: 1 << 0,
     mode_alpha_numk: 1 << 1,
     mode_8bit_byte: 1 << 2
-  }
+  }.freeze
 
   QRMODE_NAME = {
     number: :mode_number,
     alphanumeric: :mode_alpha_numk,
     byte_8bit: :mode_8bit_byte
-  }
+  }.freeze
 
   QRERRORCORRECTLEVEL = {
     l: 1,
     m: 0,
     q: 3,
     h: 2
-  }
+  }.freeze
 
   QRMASKPATTERN = {
     pattern000: 0,
@@ -29,7 +29,7 @@ module RQRCodeCore
     pattern101: 5,
     pattern110: 6,
     pattern111: 7
-  }
+  }.freeze
 
   QRMASKCOMPUTATIONS = [
     proc { |i, j| (i + j) % 2 == 0 },
@@ -40,7 +40,7 @@ module RQRCodeCore
     proc { |i, j| (i * j) % 2 + (i * j) % 3 == 0 },
     proc { |i, j| ((i * j) % 2 + (i * j) % 3) % 2 == 0 },
     proc { |i, j| ((i * j) % 3 + (i + j) % 2) % 2 == 0 }
-  ]
+  ].freeze
 
   QRPOSITIONPATTERNLENGTH = (7 + 1) * 2 + 1
   QRFORMATINFOLENGTH = 15
@@ -132,7 +132,7 @@ module RQRCodeCore
         790, 842, 898, 958, 983, 1051, 1093, 1139, 1219, 1273
       ]
     }
-  }
+  }.freeze
 
   # StandardErrors
 
@@ -314,7 +314,7 @@ module RQRCodeCore
 
     private
 
-    def prepare_common_patterns
+    def prepare_common_patterns #:nodoc:
       @modules.map! { |row| Array.new(@module_count) }
 
       place_position_probe_pattern(0, 0)
@@ -490,7 +490,7 @@ module RQRCodeCore
     end
 
     class << self
-      def count_max_data_bits(rs_blocks)
+      def count_max_data_bits(rs_blocks) #:nodoc:
         max_data_bytes = rs_blocks.reduce(0) do |sum, rs_block|
           sum + rs_block.data_count
         end

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Add a basic benchmark file
+- Add standardRB badge
+- Add `.freeze` on `CONST` lookup objects
+- Remove unused `@mode` instance variable
+- A batch of small refactors and optimizations
+
 ## [1.0.0] - 2021-04-23
 
 ### Changed
