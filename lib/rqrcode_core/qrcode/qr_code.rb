@@ -10,7 +10,8 @@ module RQRCodeCore
   QRMODE_NAME = {
     number: :mode_number,
     alphanumeric: :mode_alpha_numk,
-    byte_8bit: :mode_8bit_byte
+    byte_8bit: :mode_8bit_byte,
+    multi: :mode_multi
   }.freeze
 
   QRERRORCORRECTLEVEL = {
@@ -166,25 +167,35 @@ module RQRCodeCore
     #      * :alphanumeric
     #      * :byte_8bit
     #      * :kanji
+    #      * :multi
     #
     #   qr = RQRCodeCore::QRCode.new('hello world', size: 1, level: :m, mode: :alphanumeric)
     #
 
     def initialize(string, *args)
-      if !string.is_a? String
+
+      options = extract_options!(args)
+      mode = set_mode(options[:mode])
+
+      multi = mode == :mode_multi
+
+      if string.is_a?(Array) && multi
+        @data = string.map { |seg| seg.merge(mode: set_mode(seg[:mode])) }
+      elsif string.is_a?(Array)
+        raise QRCodeArgumentError, "Must explicitly declare {mode: :multi} when passed data is an Array"
+      elsif string.is_a? String
+        @data = string
+      else
         raise QRCodeArgumentError, "The passed data is #{string.class}, not String"
       end
 
-      options = extract_options!(args)
       level = (options[:level] || :h).to_sym
+      max_size = options[:max_size] || QRUtil.max_size
 
       if !QRERRORCORRECTLEVEL.has_key?(level)
         raise QRCodeArgumentError, "Unknown error correction level `#{level.inspect}`"
       end
-
-      @data = string
-
-      mode = QRMODE_NAME[(options[:mode] || "").to_sym]
+      
       # If mode is not explicitely given choose mode according to data type
       mode ||= if RQRCodeCore::QRNumeric.valid_data?(@data)
         QRMODE_NAME[:number]
@@ -195,9 +206,11 @@ module RQRCodeCore
       end
 
       max_size_array = QRMAXDIGITS[level][mode]
-      size = options[:size] || smallest_size_for(string, max_size_array)
 
-      if size > QRUtil.max_size
+      # 
+      size = options[:size] || (multi && MultiUtil.smallest_size_for_multi(string, level, max_size)) || smallest_size_for(@data, max_size_array)
+
+      if size > max_size
         raise QRCodeArgumentError, "Given size greater than maximum possible size of #{QRUtil.max_size}"
       end
 
@@ -205,19 +218,17 @@ module RQRCodeCore
       @version = size
       @module_count = @version * 4 + QRPOSITIONPATTERNLENGTH
       @modules = Array.new(@module_count)
-      @data_list =
-        case mode
-        when :mode_number
-          QRNumeric.new(@data)
-        when :mode_alpha_numk
-          QRAlphanumeric.new(@data)
-        else
-          QR8bitByte.new(@data)
-        end
+      @data_list = QRUtil.writer_for_mode(mode, @data)
 
       @data_cache = nil
       make
     end
+
+    def set_mode(mode)
+      QRMODE_NAME[(mode || "").to_sym]
+    end
+
+
 
     # <tt>checked?</tt> is called with a +col+ and +row+ parameter. This will
     # return true or false based on whether that coordinate exists in the
