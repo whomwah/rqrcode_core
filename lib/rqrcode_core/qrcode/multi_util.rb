@@ -30,14 +30,32 @@ module RQRCodeCore
       
       size_bits = data.reduce(0) do |total, segment|
         mode = QRMODE[QRMODE_NAME[segment[:mode]]]
-        head_len = QRUtil.get_length_in_bits(mode, min_version) 
-        data_len = segment[:data].bytesize * 8
+        head_len = QRUtil.get_length_in_bits(mode, min_version)
+
+        data_len = segment_data_size(segment)
         total += (4 + head_len + data_len)
       end
 
       return min_version if size_bits < max_size_bits
 
       smallest_size_for_multi(data, level, max_version, min_version+1)
+    end
+
+    def self.segment_data_size(segment)
+
+      length = segment[:data].length
+
+      case segment[:mode]
+        when :number
+          size = (length / 3) * QRNumeric::NUMBER_LENGTH[3]
+          size += QRNumeric::NUMBER_LENGTH[length % 3]
+        when :alphanumeric
+          size = (length / 2) * 11
+          size += 6 if length % 2 != 0
+          size
+        when :byte_8bit
+          length * 8
+        end
     end
 
   end

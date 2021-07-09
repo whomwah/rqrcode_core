@@ -207,7 +207,6 @@ module RQRCodeCore
 
       max_size_array = QRMAXDIGITS[level][mode]
 
-      # 
       size = options[:size] || (multi && MultiUtil.smallest_size_for_multi(string, level, max_size)) || smallest_size_for(@data, max_size_array)
 
       if size > max_size

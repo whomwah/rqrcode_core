@@ -26,7 +26,7 @@ module RQRCodeCore
       end
     end
 
-    private
+    protected
 
     NUMBER_LENGTH = {
       3 => 10,
