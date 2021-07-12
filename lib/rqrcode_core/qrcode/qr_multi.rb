@@ -1,5 +1,4 @@
 module RQRCodeCore
-
   class QRMulti
     def initialize(data)
       @data = data

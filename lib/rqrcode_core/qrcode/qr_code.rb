@@ -173,7 +173,6 @@ module RQRCodeCore
     #
 
     def initialize(string, *args)
-
       options = extract_options!(args)
       mode = set_mode(options[:mode])
 
@@ -195,7 +194,7 @@ module RQRCodeCore
       if !QRERRORCORRECTLEVEL.has_key?(level)
         raise QRCodeArgumentError, "Unknown error correction level `#{level.inspect}`"
       end
-      
+
       # If mode is not explicitely given choose mode according to data type
       mode ||= if RQRCodeCore::QRNumeric.valid_data?(@data)
         QRMODE_NAME[:number]
@@ -226,8 +225,6 @@ module RQRCodeCore
     def set_mode(mode)
       QRMODE_NAME[(mode || "").to_sym]
     end
-
-
 
     # <tt>checked?</tt> is called with a +col+ and +row+ parameter. This will
     # return true or false based on whether that coordinate exists in the
