@@ -48,7 +48,8 @@ module RQRCodeCore
       case segment[:mode]
       when :number
         size = (length / 3) * QRNumeric::NUMBER_LENGTH[3]
-        size + QRNumeric::NUMBER_LENGTH[length % 3]
+        size += QRNumeric::NUMBER_LENGTH[length % 3] if length % 3 != 0
+        size
       when :alphanumeric
         size = (length / 2) * 11
         size += 6 if length.odd?
