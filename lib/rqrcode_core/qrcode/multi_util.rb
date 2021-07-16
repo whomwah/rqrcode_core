@@ -14,12 +14,15 @@ module RQRCodeCore
       m: [128, 224, 352, 512, 688, 864, 992, 1232, 1456, 1728, 2032, 2320, 2672, 2920, 3320, 3624,
         4056, 4504, 5016, 5352, 5712, 6256, 6880, 7312, 8000, 8496, 9024, 9544, 10_136, 10_984,
         11_640, 12_328, 13_048, 13_800, 14_496, 15_312, 15_936, 16_816, 17_728, 18_672],
+      q: [104, 176, 272, 384, 496, 608, 704, 880, 1056, 1232, 1440, 1648, 1952, 2088, 2360, 2600, 2936,
+        3176, 3560, 3880, 4096, 4544, 4912, 5312, 5744, 6032, 6464, 6968, 7288, 7880, 8264, 8920, 9368,
+        9848, 10288, 10832, 11408, 12016, 12656, 13328],
       h: [72, 128, 208, 288, 368, 480, 528, 688, 800, 976, 1120, 1264, 1440, 1576, 1784,
         2024, 2264, 2504, 2728, 3080, 3248, 3536, 3712, 4112, 4304, 4768, 5024, 5288, 5608, 5960,
         6344, 6760, 7208, 7688, 7888, 8432, 8768, 9136, 9776, 10_208]
     }.freeze
 
-    def self.smallest_size_for_multi(data, level, max_version = 40, min_version = 1)
+    def self.smallest_size_for_multi(data:, level:, max_version: 40, min_version: 1)
       raise QRCodeArgumentError, "Data too long for QR Code" if min_version > max_version
 
       # Manually calculate max size
@@ -39,7 +42,7 @@ module RQRCodeCore
 
       return min_version if size_bits < max_size_bits
 
-      smallest_size_for_multi(data, level, max_version, min_version + 1)
+      smallest_size_for_multi(data: data, level: level, max_version: max_version, min_version: min_version + 1)
     end
 
     def self.segment_data_size(segment)

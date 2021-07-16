@@ -5,14 +5,13 @@ require "test_helper"
 class RQRCodeCore::MultiTest < Minitest::Test
   PAYLOAD = [{data: "byteencoded", mode: :byte_8bit}, {data: "A1" * 103, mode: :alphanumeric}, {data: "1" * 500, mode: :number}]
   def test_multi_payloads
-    begin
     RQRCodeCore::QRCode.new(PAYLOAD, mode: "multi", level: :l)
     RQRCodeCore::QRCode.new(PAYLOAD, mode: "multi", level: :m)
+    RQRCodeCore::QRCode.new(PAYLOAD, mode: "multi", level: :q)
     RQRCodeCore::QRCode.new(PAYLOAD, mode: "multi")
     RQRCodeCore::QRCode.new(PAYLOAD, mode: "multi", level: :l, max_size: 22)
-    rescue => e
-      flunk(e)
-    end
+  rescue => e
+    flunk(e)
   end
 
   def test_invalid_code_configs

@@ -153,10 +153,10 @@ module RQRCodeCore
   class QRCode
     attr_reader :modules, :module_count, :version
 
-    # Expects a string to be parsed in, other args are optional
+    # Expects a string or array (for multi-segment encoding) to be parsed in, other args are optional
     #
-    #   # string - the string you wish to encode
-    #   # size   - the size (Integer) of the qrcode (defaults to smallest size needed to encode the string)
+    #   # data - the string or array of segments you wish to encode
+    #   # size   - the size (Integer) of the qrcode (defaults to smallest size needed to encode the data)
     #   # level  - the error correction level, can be:
     #      * Level :l 7%  of code can be restored
     #      * Level :m 15% of code can be restored
@@ -170,22 +170,22 @@ module RQRCodeCore
     #      * :multi
     #
     #   qr = RQRCodeCore::QRCode.new('hello world', size: 1, level: :m, mode: :alphanumeric)
-    #
+    #   qr = RQRCodeCore::QRCode.new([{data: 'foo', mode: :byte_8bit }, {data: 'bar1', mode: :alphanumeric }], mode: :multi)
 
-    def initialize(string, *args)
+    def initialize(data, *args)
       options = extract_options!(args)
       mode = set_mode(options[:mode])
 
       multi = mode == :mode_multi
 
-      if string.is_a?(Array) && multi
-        @data = string.map { |seg| seg.merge(mode: set_mode(seg[:mode])) }
-      elsif string.is_a?(Array)
+      if data.is_a?(Array) && multi
+        @data = data.map { |seg| seg.merge(mode: set_mode(seg[:mode])) }
+      elsif data.is_a?(Array)
         raise QRCodeArgumentError, "Must explicitly declare {mode: :multi} when passed data is an Array"
-      elsif string.is_a? String
-        @data = string
+      elsif data.is_a? String
+        @data = data
       else
-        raise QRCodeArgumentError, "The passed data is #{string.class}, not String"
+        raise QRCodeArgumentError, "The passed data is #{data.class}, not String"
       end
 
       level = (options[:level] || :h).to_sym
@@ -206,7 +206,7 @@ module RQRCodeCore
 
       max_size_array = QRMAXDIGITS[level][mode]
 
-      size = options[:size] || (multi && MultiUtil.smallest_size_for_multi(string, level, max_size)) || smallest_size_for(@data, max_size_array)
+      size = options[:size] || (multi && MultiUtil.smallest_size_for_multi(data: data, level: level, max_version: max_size)) || smallest_size_for(@data, max_size_array)
 
       if size > max_size
         raise QRCodeArgumentError, "Given size greater than maximum possible size of #{QRUtil.max_size}"
