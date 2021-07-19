@@ -3,7 +3,7 @@
 require "test_helper"
 
 class RQRCodeCore::MultiTest < Minitest::Test
-  PAYLOAD = [{data: "byteencoded", mode: :byte_8bit}, {data: "A1" * 103, mode: :alphanumeric}, {data: "1" * 500, mode: :number}]
+  PAYLOAD = [{data: "byteencoded", mode: :byte_8bit}, {data: "A1" * 107, mode: :alphanumeric}, {data: "1" * 498, mode: :number}]
   def test_multi_payloads
     RQRCodeCore::QRCode.new(PAYLOAD, mode: "multi", level: :l)
     RQRCodeCore::QRCode.new(PAYLOAD, mode: "multi", level: :m)

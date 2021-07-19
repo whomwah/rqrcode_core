@@ -46,20 +46,18 @@ module RQRCodeCore
     end
 
     def self.segment_data_size(segment)
-      length = segment[:data].length
+      data_length = segment[:data].length
 
-      case segment[:mode]
+      chunk_size, bit_length, extra = case segment[:mode]
       when :number
-        size = (length / 3) * QRNumeric::NUMBER_LENGTH[3]
-        size += QRNumeric::NUMBER_LENGTH[length % 3] if length % 3 != 0
-        size
+        [3, QRNumeric::NUMBER_LENGTH[3], QRNumeric::NUMBER_LENGTH[data_length % 3] || 0]
       when :alphanumeric
-        size = (length / 2) * 11
-        size += 6 if length.odd?
-        size
+        [2, 11, 6]
       when :byte_8bit
-        length * 8
+        [1, 8, 0]
       end
+
+      (data_length / chunk_size) * bit_length + ((data_length % chunk_size) == 0 ? 0 : extra)
     end
   end
 end
