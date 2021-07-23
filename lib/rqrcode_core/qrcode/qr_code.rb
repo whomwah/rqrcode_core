@@ -134,6 +134,13 @@ module RQRCodeCore
     }
   }.freeze
 
+  QRCONSOLEROWCHARS = {
+    WHITE_ALL: "\u2588",
+    WHITE_BLACK: "\u2580",
+    BLACK_WHITE: "\u2584",
+    BLACK_ALL: " "
+  }.freeze
+
   # StandardErrors
 
   class QRCodeArgumentError < ArgumentError; end
@@ -276,6 +283,46 @@ module RQRCodeCore
         rows << light * (rows.first.length / light.size)
       end
       rows.join("\n")
+    end
+
+    # This is a public method that returns the QR Code you have
+    # generated as a string using special chars to be render on cosole.
+    # It will be able to be read in this format by a QR Code reader.
+    # Here's an example of it's use:
+    #
+    #  instance.to_console =>
+    #  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+    #  █ ▄▄▄▄▄ █▄ █▄▀█ ▄▄▄▄▄ █
+    #
+    def to_console
+      module_data = @modules.dup
+      module_data.push(Array.new(@module_count, false)) if @module_count.odd?
+
+      output = "#{Array.new(@module_count + 2, QRCONSOLEROWCHARS[:BLACK_WHITE]).join}\n"
+
+      (0...@module_count).step(2).each do |row|
+        break unless module_data[row + 1]
+
+        output += QRCONSOLEROWCHARS[:WHITE_ALL]
+
+        (0...module_count).each do |col|
+          output += if module_data[row][col] == false && module_data[row + 1][col] == false
+            QRCONSOLEROWCHARS[:WHITE_ALL]
+          elsif module_data[row][col] == false && module_data[row + 1][col] == true
+            QRCONSOLEROWCHARS[:WHITE_BLACK]
+          elsif module_data[row][col] == true && module_data[row + 1][col] == false
+            QRCONSOLEROWCHARS[:BLACK_WHITE]
+          else
+            QRCONSOLEROWCHARS[:BLACK_ALL]
+          end
+        end
+
+        output += "#{QRCONSOLEROWCHARS[:WHITE_ALL]}\n"
+      end
+
+      output += "#{Array.new(@module_count + 2, QRCONSOLEROWCHARS[:BLACK_WHITE]).join}\n" unless @module_count.odd?
+
+      output
     end
 
     # Public overide as default inspect is very verbose

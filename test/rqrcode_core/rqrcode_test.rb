@@ -73,6 +73,11 @@ class RQRCodeCore::BaseTest < Minitest::Test
     assert_equal "@@@@@@@ @@ @  @@@@@@@\n", qr.to_s(dark: "@")[0..21]
   end
 
+  def test_to_console
+    qr = RQRCodeCore::QRCode.new("duncan", size: 1)
+    assert_equal "█ ▄▄▄▄▄ █▄ █▄▀█ ▄▄▄▄▄ █\n", qr.to_console[24, 24]
+  end
+
   def test_auto_alphanumeric
     # Overflowws without the alpha version
     assert RQRCodeCore::QRCode.new("1234567890", size: 1, level: :h)
