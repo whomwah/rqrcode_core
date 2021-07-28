@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class RQRCodeCore::MultiTest < Minitest::Test
+class RQRCodeCore::QRSegmentTest < Minitest::Test
   PAYLOAD = [{data: "byteencoded", mode: :byte_8bit}, {data: "A1" * 107, mode: :alphanumeric}, {data: "1" * 498, mode: :number}].map do |seg|
     RQRCodeCore::QRSegment.new(**seg)
   end
