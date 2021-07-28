@@ -135,6 +135,21 @@ module RQRCodeCore
     }
   }.freeze
 
+  QRMAXBITS = {
+    l: [152, 272, 440, 640, 864, 1088, 1248, 1552, 1856, 2192, 2592, 2960, 3424, 3688, 4184,
+      4712, 5176, 5768, 6360, 6888, 7456, 8048, 8752, 9392, 10_208, 10_960, 11_744, 12_248,
+      13_048, 13_880, 14_744, 15_640, 16_568, 17_528, 18_448, 19_472, 20_528, 21_616, 22_496, 23_648],
+    m: [128, 224, 352, 512, 688, 864, 992, 1232, 1456, 1728, 2032, 2320, 2672, 2920, 3320, 3624,
+      4056, 4504, 5016, 5352, 5712, 6256, 6880, 7312, 8000, 8496, 9024, 9544, 10_136, 10_984,
+      11_640, 12_328, 13_048, 13_800, 14_496, 15_312, 15_936, 16_816, 17_728, 18_672],
+    q: [104, 176, 272, 384, 496, 608, 704, 880, 1056, 1232, 1440, 1648, 1952, 2088, 2360, 2600, 2936,
+      3176, 3560, 3880, 4096, 4544, 4912, 5312, 5744, 6032, 6464, 6968, 7288, 7880, 8264, 8920, 9368,
+      9848, 10288, 10832, 11408, 12016, 12656, 13328],
+    h: [72, 128, 208, 288, 368, 480, 528, 688, 800, 976, 1120, 1264, 1440, 1576, 1784,
+      2024, 2264, 2504, 2728, 3080, 3248, 3536, 3712, 4112, 4304, 4768, 5024, 5288, 5608, 5960,
+      6344, 6760, 7208, 7688, 7888, 8432, 8768, 9136, 9776, 10_208]
+  }.freeze
+
   # StandardErrors
 
   class QRCodeArgumentError < ArgumentError; end
@@ -155,14 +170,14 @@ module RQRCodeCore
 
     # Expects a string or array (for multi-segment encoding) to be parsed in, other args are optional
     #
-    #   # data - the string or array of segments you wish to encode
+    #   # data - the string, QRSegment or array of QRSegments you wish to encode
     #   # size   - the size (Integer) of the qrcode (defaults to smallest size needed to encode the data)
     #   # level  - the error correction level, can be:
     #      * Level :l 7%  of code can be restored
     #      * Level :m 15% of code can be restored
     #      * Level :q 25% of code can be restored
     #      * Level :h 30% of code can be restored (default :h)
-    #   # mode   - the mode of the qrcode (defaults to alphanumeric or byte_8bit, depending on the input data):
+    #   # mode   - the mode of the qrcode (defaults to alphanumeric or byte_8bit, depending on the input data, only used when data is a string):
     #      * :number
     #      * :alphanumeric
     #      * :byte_8bit
@@ -170,43 +185,32 @@ module RQRCodeCore
     #      * :multi
     #
     #   qr = RQRCodeCore::QRCode.new('hello world', size: 1, level: :m, mode: :alphanumeric)
-    #   qr = RQRCodeCore::QRCode.new([{data: 'foo', mode: :byte_8bit }, {data: 'bar1', mode: :alphanumeric }], mode: :multi)
+    #   segment_qr = QRCodeCore::QRCode.new(QRSegment.new(data: 'foo', mode: :byte_8bit))
+    #   multi_qr = RQRCodeCore::QRCode.new([QRSegment.new(data: 'foo', mode: :byte_8bit), QRSegment.new(data: 'bar1', mode: :alphanumeric)])
 
     def initialize(data, *args)
       options = extract_options!(args)
-      mode = set_mode(options[:mode])
-
-      multi = mode == :mode_multi
-
-      if data.is_a?(Array) && multi
-        @data = data.map { |seg| seg.merge(mode: set_mode(seg[:mode])) }
-      elsif data.is_a?(Array)
-        raise QRCodeArgumentError, "Must explicitly declare {mode: :multi} when passed data is an Array"
-      elsif data.is_a? String
-        @data = data
-      else
-        raise QRCodeArgumentError, "The passed data is #{data.class}, not String"
-      end
 
       level = (options[:level] || :h).to_sym
       max_size = options[:max_size] || QRUtil.max_size
+
+      @data = case data
+      when String
+        QRSegment.new(data: data, mode: options[:mode])
+      when Array
+        raise QRCodeArgumentError, "Array must contain QRSegments" if data.find { |seg| !seg.is_a?(QRSegment) }
+        data
+      when QRSegment
+        data
+      else
+        raise QRCodeArgumentError, "data must be a String, QRSegment, or Array of QRSegments"
+      end
 
       if !QRERRORCORRECTLEVEL.has_key?(level)
         raise QRCodeArgumentError, "Unknown error correction level `#{level.inspect}`"
       end
 
-      # If mode is not explicitely given choose mode according to data type
-      mode ||= if RQRCodeCore::QRNumeric.valid_data?(@data)
-        QRMODE_NAME[:number]
-      elsif QRAlphanumeric.valid_data?(@data)
-        QRMODE_NAME[:alphanumeric]
-      else
-        QRMODE_NAME[:byte_8bit]
-      end
-
-      max_size_array = QRMAXDIGITS[level][mode]
-
-      size = options[:size] || (multi && MultiUtil.smallest_size_for_multi(data: data, level: level, max_version: max_size)) || smallest_size_for(@data, max_size_array)
+      size = options[:size] || (multi_segment? && smallest_size_for_multi(data: @data, level: level, max_version: max_size)) || smallest_size_for(@data.data, QRMAXDIGITS[level][@data.mode])
 
       if size > max_size
         raise QRCodeArgumentError, "Given size greater than maximum possible size of #{QRUtil.max_size}"
@@ -216,14 +220,9 @@ module RQRCodeCore
       @version = size
       @module_count = @version * 4 + QRPOSITIONPATTERNLENGTH
       @modules = Array.new(@module_count)
-      @data_list = QRUtil.writer_for_mode(mode, @data)
-
+      @data_list = multi_segment? ? QRMulti.new(@data) : @data.writer
       @data_cache = nil
       make
-    end
-
-    def set_mode(mode)
-      QRMODE_NAME[(mode || "").to_sym]
     end
 
     # <tt>checked?</tt> is called with a +col+ and +row+ parameter. This will
@@ -298,6 +297,11 @@ module RQRCodeCore
     # Return a symbol for current error connection level
     def error_correction_level
       QRERRORCORRECTLEVEL.invert[@error_correct_level]
+    end
+
+    # Return true if this QR code includes multiple encoded segments
+    def multi_segment?
+      @data.is_a?(Array)
     end
 
     # Return a symbol in QRMODE.keys for current mode used
@@ -490,6 +494,27 @@ module RQRCodeCore
       ver = max_size_array.index { |i| i >= l }
       raise QRCodeRunTimeError, "code length overflow. (#{l} digits > any version capacity)" unless ver
       ver + 1
+    end
+
+    def smallest_size_for_multi(data:, level:, max_version: 40, min_version: 1)
+      raise QRCodeArgumentError, "Data too long for QR Code" if min_version > max_version
+
+      # Manually calculate max size
+      # rs_blocks = QRRSBlock.get_rs_blocks(min_version, QRERRORCORRECTLEVEL[level])
+      # max_size_bits = QRCode.count_max_data_bits(rs_blocks)
+
+      # Max size table
+      max_size_bits = QRMAXBITS[level][min_version - 1]
+
+      size_bits = data.reduce(0) do |total, segment|
+        mode = QRMODE[segment.mode]
+
+        total + 4 + QRUtil.get_length_in_bits(mode, min_version) + segment.bit_size
+      end
+
+      return min_version if size_bits < max_size_bits
+
+      smallest_size_for_multi(data: data, level: level, max_version: max_version, min_version: min_version + 1)
     end
 
     def extract_options!(arr) #:nodoc:

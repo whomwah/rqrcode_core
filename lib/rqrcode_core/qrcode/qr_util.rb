@@ -65,19 +65,6 @@ module RQRCodeCore
       PATTERN_POSITION_TABLE.count
     end
 
-    def self.writer_for_mode(mode, data)
-      case mode
-      when :mode_number
-        QRNumeric.new(data)
-      when :mode_alpha_numk
-        QRAlphanumeric.new(data)
-      when :mode_multi
-        QRMulti.new(data)
-      else
-        QR8bitByte.new(data)
-      end
-    end
-
     def self.get_bch_format_info(data)
       d = data << 10
       while QRUtil.get_bch_digit(d) - QRUtil.get_bch_digit(G15) >= 0

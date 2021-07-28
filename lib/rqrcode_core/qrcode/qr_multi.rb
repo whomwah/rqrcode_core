@@ -5,10 +5,7 @@ module RQRCodeCore
     end
 
     def write(buffer)
-      @data.each do |seg|
-        writer = QRUtil.writer_for_mode(seg[:mode], seg[:data])
-        writer.write(buffer)
-      end
+      @data.each { |seg| seg.writer.write(buffer) }
     end
   end
 end
