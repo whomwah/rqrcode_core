@@ -170,7 +170,7 @@ module RQRCodeCore
 
     # Expects a string or array (for multi-segment encoding) to be parsed in, other args are optional
     #
-    #   # data - the string, QRSegment or array of QRSegments you wish to encode
+    #   # data - the string, QRSegment or array of Hashes (with data:, mode: keys) you wish to encode
     #   # size   - the size (Integer) of the qrcode (defaults to smallest size needed to encode the data)
     #   # level  - the error correction level, can be:
     #      * Level :l 7%  of code can be restored
@@ -182,11 +182,10 @@ module RQRCodeCore
     #      * :alphanumeric
     #      * :byte_8bit
     #      * :kanji
-    #      * :multi
     #
     #   qr = RQRCodeCore::QRCode.new('hello world', size: 1, level: :m, mode: :alphanumeric)
-    #   segment_qr = QRCodeCore::QRCode.new(QRSegment.new(data: 'foo', mode: :byte_8bit))
-    #   multi_qr = RQRCodeCore::QRCode.new([QRSegment.new(data: 'foo', mode: :byte_8bit), QRSegment.new(data: 'bar1', mode: :alphanumeric)])
+    #   segment_qr = QRCodeCore::QRCode.new({ data: 'foo', mode: :byte_8bit })
+    #   multi_qr = RQRCodeCore::QRCode.new([{ data: 'foo', mode: :byte_8bit }, { data: 'bar1', mode: :alphanumeric }])
 
     def initialize(data, *args)
       options = extract_options!(args)
@@ -198,12 +197,12 @@ module RQRCodeCore
       when String
         QRSegment.new(data: data, mode: options[:mode])
       when Array
-        raise QRCodeArgumentError, "Array must contain QRSegments" if data.find { |seg| !seg.is_a?(QRSegment) }
-        data
+        raise QRCodeArgumentError, "Array must contain Hashes with :data and :mode keys" unless data.all? { |seg| seg.is_a?(Hash) && %i[data mode].all? { |s| seg.key? s } }
+        data.map { |seg| QRSegment.new(**seg) }
       when QRSegment
         data
       else
-        raise QRCodeArgumentError, "data must be a String, QRSegment, or Array of QRSegments"
+        raise QRCodeArgumentError, "data must be a String, QRSegment, or an Array"
       end
 
       if !QRERRORCORRECTLEVEL.has_key?(level)

@@ -5,11 +5,11 @@
 
 `rqrcode_core` is a library for encoding QR Codes in pure Ruby. It has a simple interface with all the standard qrcode options. It was originally adapted in 2008 from a Javascript library by [Kazuhiko Arase](https://github.com/kazuhikoarase).
 
-Features:
+Features:q
 
 * `rqrcode_core` is a Ruby only library. It requires no native libraries. Just Ruby!
 * It is an encoding library. You can't decode QR Codes with it.
-* The interface is simple and assumes you just want to encode a string into a QR Code.
+* The interface is simple and assumes you just want to encode a string into a QR Code, but also allows for encoding multiple segments.
 * QR Code is trademarked by Denso Wave inc.
 
 `rqrcode_core` is the basis of the popular `rqrcode` gem [https://github.com/whomwah/rqrcode]. This gem allows you to generate different renderings of your QR Code, including `png`, `svg` and `ansi`.
@@ -47,6 +47,15 @@ x xxx x  xxxxx x       xx x xxx x
 ... etc
 ```
 
+## Multiple Encoding Support
+
+```ruby
+$ require "rqrcode_core"
+$ qr = RQRCodeCore::QRCode.new([{data: "byteencoded", mode: :byte_8bit}, {data: "A1" * 100, mode: :alphanumeric}, {data: "1" * 500, mode: :number}])
+```
+
+This will create a QR Code with byte encoded, alphanumeric and number segments. Any combination of encodings/segments will work provided it fits within size limits.
+
 ## Doing your own rendering
 
 ```ruby
@@ -64,10 +73,10 @@ end
 
 ### Options
 
-The library expects a string to be parsed in, other args are optional.
+The library expects a string or array (for multiple encodings) to be parsed in, other args are optional.
 
 ```
-string - the string you wish to encode
+data - the string or array you wish to encode
 
 size   - the size (integer) of the qrcode (defaults to smallest size needed to encode the string)
 
