@@ -1,20 +1,20 @@
+# frozen_string_literal: true
+
 module RQRCodeCore
   class QRSegment
     attr_reader :data, :mode
 
     def initialize(data:, mode: nil)
       @data = data
-      if mode
-        @mode = QRMODE_NAME[(mode || "").to_sym]
+      @mode = QRMODE_NAME.dig(mode&.to_sym)
+
+      # If mode is not explicitely found choose mode according to data type
+      @mode ||= if RQRCodeCore::QRNumeric.valid_data?(@data)
+        QRMODE_NAME[:number]
+      elsif QRAlphanumeric.valid_data?(@data)
+        QRMODE_NAME[:alphanumeric]
       else
-        # If mode is not explicitely given choose mode according to data type
-        @mode ||= if RQRCodeCore::QRNumeric.valid_data?(@data)
-          QRMODE_NAME[:number]
-        elsif QRAlphanumeric.valid_data?(@data)
-          QRMODE_NAME[:alphanumeric]
-        else
-          QRMODE_NAME[:byte_8bit]
-        end
+        QRMODE_NAME[:byte_8bit]
       end
     end
 

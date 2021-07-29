@@ -13,8 +13,8 @@ class RQRCodeCore::QRSegmentTest < Minitest::Test
     RQRCodeCore::QRCode.new(PAYLOAD, level: :q)
     RQRCodeCore::QRCode.new(PAYLOAD)
     RQRCodeCore::QRCode.new(PAYLOAD, level: :l, max_size: 22)
-    # rescue => e
-    #   flunk(e)
+  rescue => e
+    flunk(e)
   end
 
   def test_invalid_code_configs

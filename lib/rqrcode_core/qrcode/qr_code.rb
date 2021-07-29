@@ -299,7 +299,7 @@ module RQRCodeCore
       QRERRORCORRECTLEVEL.invert[@error_correct_level]
     end
 
-    # Return true if this QR code includes multiple encoded segments
+    # Return true if this QR Code includes multiple encoded segments
     def multi_segment?
       @data.is_a?(Array)
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module RQRCodeCore
   class QRMulti
     def initialize(data)
