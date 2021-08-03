@@ -18,7 +18,15 @@ module RQRCodeCore
       end
     end
 
-    def bit_size
+    def size(version)
+      4 + header_size(version) + content_size
+    end
+
+    def header_size(version)
+      QRUtil.get_length_in_bits(QRMODE[mode], version)
+    end
+
+    def content_size
       chunk_size, bit_length, extra = case mode
       when :mode_number
         [3, QRNumeric::NUMBER_LENGTH[3], QRNumeric::NUMBER_LENGTH[data_length % 3] || 0]
@@ -47,7 +55,7 @@ module RQRCodeCore
     private
 
     def data_length
-      data.length
+      data.bytesize
     end
   end
 end
