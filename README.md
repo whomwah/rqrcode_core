@@ -5,7 +5,7 @@
 
 `rqrcode_core` is a library for encoding QR Codes in pure Ruby. It has a simple interface with all the standard qrcode options. It was originally adapted in 2008 from a Javascript library by [Kazuhiko Arase](https://github.com/kazuhikoarase).
 
-Features:q
+Features:
 
 * `rqrcode_core` is a Ruby only library. It requires no native libraries. Just Ruby!
 * It is an encoding library. You can't decode QR Codes with it.

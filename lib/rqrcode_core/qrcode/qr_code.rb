@@ -121,7 +121,7 @@ module RQRCodeCore
       end
       @error_correct_level = QRERRORCORRECTLEVEL[level]
 
-      if !QRERRORCORRECTLEVEL.has_key?(level)
+      unless @error_correct_level
         raise QRCodeArgumentError, "Unknown error correction level `#{level.inspect}`"
       end
 
@@ -406,8 +406,6 @@ module RQRCodeCore
     def minimum_version(limit: QRUtil.max_size, version: 1)
       raise QRCodeRunTimeError, "Data length exceed maximum capacity of version #{limit}" if version > limit
 
-      # rs_blocks = QRRSBlock.get_rs_blocks(version, QRERRORCORRECTLEVEL[error_correction_level])
-      # max_size_bits = QRCode.count_max_data_bits(rs_blocks)
       max_size_bits = QRMAXBITS[error_correction_level][version - 1]
 
       size_bits = multi_segment? ? @data.sum { |seg| seg.size(version) } : @data.size(version)
