@@ -132,7 +132,7 @@ class RQRCodeCore::BaseTest < Minitest::Test
   end
 
   def test_version_table
-    # tables in RQRCodeCore::QRCode::QRMAXDIGITS wasn't updated to support greater versions
+    # tables in RQRCodeCore::QRCode::QRMAXBITS wasn't updated to support greater versions
     assert_equal RQRCodeCore::QRCode.new("1" * 289, level: :h, mode: :number).version, 11
     assert_equal RQRCodeCore::QRCode.new("A" * 175, level: :h, mode: :alphanumeric).version, 11
     assert_equal RQRCodeCore::QRCode.new("a" * 383, level: :h, mode: :byte_8bit).version, 21
