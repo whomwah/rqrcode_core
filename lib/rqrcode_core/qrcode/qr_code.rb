@@ -10,7 +10,8 @@ module RQRCodeCore
   QRMODE_NAME = {
     number: :mode_number,
     alphanumeric: :mode_alpha_numk,
-    byte_8bit: :mode_8bit_byte
+    byte_8bit: :mode_8bit_byte,
+    multi: :mode_multi
   }.freeze
 
   QRERRORCORRECTLEVEL = {
@@ -49,89 +50,19 @@ module RQRCodeCore
   # http://web.archive.org/web/20110710094955/http://www.denso-wave.com/qrcode/vertable2-e.html
   # http://web.archive.org/web/20110710094955/http://www.denso-wave.com/qrcode/vertable3-e.html
   # http://web.archive.org/web/20110710094955/http://www.denso-wave.com/qrcode/vertable4-e.html
-  # Each array contains levels max chars from level 1 to level 40
-  QRMAXDIGITS = {
-    l: {
-      mode_number: [
-        41, 77, 127, 187, 255, 322, 370, 461, 552, 652, 772,
-        883, 1022, 1101, 1250, 1408, 1548, 1725, 1903, 2061,
-        2232, 2409, 2620, 2812, 3057, 3283, 3514, 3669, 3909, 4158,
-        4417, 4686, 4965, 5253, 5529, 5836, 6153, 6479, 6743, 7089
-      ],
-      mode_alpha_numk: [
-        25, 47, 77, 114, 154, 195, 224, 279, 335, 395,
-        468, 535, 619, 667, 758, 854, 938, 1046, 1153, 1249,
-        1352, 1460, 1588, 1704, 1853, 1990, 2132, 2223, 2369, 2520,
-        2677, 2840, 3009, 3183, 3351, 3537, 3729, 3927, 4087, 4296
-      ],
-      mode_8bit_byte: [
-        17, 32, 53, 78, 106, 134, 154, 192, 230, 271,
-        321, 367, 425, 458, 520, 586, 644, 718, 792, 858,
-        929, 1003, 1091, 1171, 1273, 1367, 1465, 1528, 1628, 1732,
-        1840, 1952, 2068, 2188, 2303, 2431, 2563, 2699, 2809, 2953
-      ]
-    },
-    m: {
-      mode_number: [
-        34, 63, 101, 149, 202, 255, 293, 365, 432, 513,
-        604, 691, 796, 871, 991, 1082, 1212, 1346, 1500, 1600,
-        1708, 1872, 2059, 2188, 2395, 2544, 2701, 2857, 3035, 3289,
-        3486, 3693, 3909, 4134, 4343, 4588, 4775, 5039, 5313, 5596
-      ],
-      mode_alpha_numk: [
-        20, 38, 61, 90, 122, 154, 178, 221, 262, 311,
-        366, 419, 483, 528, 600, 656, 734, 816, 909, 970,
-        1035, 1134, 1248, 1326, 1451, 1542, 1637, 1732, 1839, 1994,
-        2113, 2238, 2369, 2506, 2632, 2780, 2894, 3054, 3220, 3391
-      ],
-      mode_8bit_byte: [
-        14, 26, 42, 62, 84, 106, 122, 152, 180, 213,
-        251, 287, 331, 362, 412, 450, 504, 560, 624, 666,
-        711, 779, 857, 911, 997, 1059, 1125, 1190, 1264, 1370,
-        1452, 1538, 1628, 1722, 1809, 1911, 1989, 2099, 2213, 2331
-      ]
-    },
-    q: {
-      mode_number: [
-        27, 48, 77, 111, 144, 178, 207, 259, 312, 364,
-        427, 489, 580, 621, 703, 775, 876, 948, 1063, 1159,
-        1224, 1358, 1468, 1588, 1718, 1804, 1933, 2085, 2181, 2358,
-        2473, 2670, 2805, 2949, 3081, 3244, 3417, 3599, 3791, 3993
-      ],
-      mode_alpha_numk: [
-        16, 29, 47, 67, 87, 108, 125, 157, 189, 221,
-        259, 296, 352, 376, 426, 470, 531, 574, 644, 702,
-        742, 823, 890, 963, 1041, 1094, 1172, 1263, 1322, 1429,
-        1499, 1618, 1700, 1787, 1867, 1966, 2071, 2181, 2298, 2420
-      ],
-      mode_8bit_byte: [
-        11, 20, 32, 46, 60, 74, 86, 108, 130, 151,
-        177, 203, 241, 258, 292, 22, 364, 394, 442, 482,
-        509, 565, 611, 661, 715, 751, 805, 868, 908, 982,
-        1030, 1112, 1168, 1228, 1283, 1351, 1423, 1499, 1579, 1663
-      ]
-    },
-    h: {
-      mode_number: [
-        17, 34, 58, 82, 106, 139, 154, 202, 235, 288, 331, 374, 427, 468, 530, 602, 674,
-        331, 374, 427, 468, 530, 602, 674, 746, 813, 919,
-        969, 1056, 1108, 1228, 1286, 1425, 1501, 1581, 1677, 1782,
-        1897, 2022, 2157, 2301, 2361, 2524, 2625, 2735, 2927, 3057
-
-      ],
-      mode_alpha_numk: [
-        10, 20, 35, 50, 64, 84, 93, 122, 143, 174, 200,
-        200, 227, 259, 283, 321, 365, 408, 452, 493, 557,
-        587, 640, 672, 744, 779, 864, 910, 958, 1016, 1080,
-        1150, 1226, 1307, 1394, 1431, 1530, 1591, 1658, 1774, 1852
-      ],
-      mode_8bit_byte: [
-        7, 14, 24, 34, 44, 58, 64, 84, 98, 119,
-        137, 155, 177, 194, 220, 250, 280, 310, 338, 382,
-        403, 439, 461, 511, 535, 593, 625, 658, 698, 742,
-        790, 842, 898, 958, 983, 1051, 1093, 1139, 1219, 1273
-      ]
-    }
+  QRMAXBITS = {
+    l: [152, 272, 440, 640, 864, 1088, 1248, 1552, 1856, 2192, 2592, 2960, 3424, 3688, 4184,
+      4712, 5176, 5768, 6360, 6888, 7456, 8048, 8752, 9392, 10_208, 10_960, 11_744, 12_248,
+      13_048, 13_880, 14_744, 15_640, 16_568, 17_528, 18_448, 19_472, 20_528, 21_616, 22_496, 23_648],
+    m: [128, 224, 352, 512, 688, 864, 992, 1232, 1456, 1728, 2032, 2320, 2672, 2920, 3320, 3624,
+      4056, 4504, 5016, 5352, 5712, 6256, 6880, 7312, 8000, 8496, 9024, 9544, 10_136, 10_984,
+      11_640, 12_328, 13_048, 13_800, 14_496, 15_312, 15_936, 16_816, 17_728, 18_672],
+    q: [104, 176, 272, 384, 496, 608, 704, 880, 1056, 1232, 1440, 1648, 1952, 2088, 2360, 2600, 2936,
+      3176, 3560, 3880, 4096, 4544, 4912, 5312, 5744, 6032, 6464, 6968, 7288, 7880, 8264, 8920, 9368,
+      9848, 10288, 10832, 11408, 12016, 12656, 13328],
+    h: [72, 128, 208, 288, 368, 480, 528, 688, 800, 976, 1120, 1264, 1440, 1576, 1784,
+      2024, 2264, 2504, 2728, 3080, 3248, 3536, 3712, 4112, 4304, 4768, 5024, 5288, 5608, 5960,
+      6344, 6760, 7208, 7688, 7888, 8432, 8768, 9136, 9776, 10_208]
   }.freeze
 
   # StandardErrors
@@ -152,69 +83,59 @@ module RQRCodeCore
   class QRCode
     attr_reader :modules, :module_count, :version
 
-    # Expects a string to be parsed in, other args are optional
+    # Expects a string or array (for multi-segment encoding) to be parsed in, other args are optional
     #
-    #   # string - the string you wish to encode
-    #   # size   - the size (Integer) of the qrcode (defaults to smallest size needed to encode the string)
-    #   # level  - the error correction level, can be:
+    #   # data - the string, QRSegment or array of Hashes (with data:, mode: keys) you wish to encode
+    #   # size - the size (Integer) of the QR Code (defaults to smallest size needed to encode the data)
+    #   # max_size - the max_size (Integer) of the QR Code (default RQRCodeCore::QRUtil.max_size)
+    #   # level - the error correction level, can be:
     #      * Level :l 7%  of code can be restored
     #      * Level :m 15% of code can be restored
     #      * Level :q 25% of code can be restored
     #      * Level :h 30% of code can be restored (default :h)
-    #   # mode   - the mode of the qrcode (defaults to alphanumeric or byte_8bit, depending on the input data):
+    #   # mode - the mode of the QR Code (defaults to alphanumeric or byte_8bit, depending on the input data, only used when data is a string):
     #      * :number
     #      * :alphanumeric
     #      * :byte_8bit
     #      * :kanji
     #
     #   qr = RQRCodeCore::QRCode.new('hello world', size: 1, level: :m, mode: :alphanumeric)
-    #
+    #   segment_qr = QRCodeCore::QRCode.new({ data: 'foo', mode: :byte_8bit })
+    #   multi_qr = RQRCodeCore::QRCode.new([{ data: 'foo', mode: :byte_8bit }, { data: 'bar1', mode: :alphanumeric }])
 
-    def initialize(string, *args)
-      if !string.is_a? String
-        raise QRCodeArgumentError, "The passed data is #{string.class}, not String"
-      end
-
+    def initialize(data, *args)
       options = extract_options!(args)
-      level = (options[:level] || :h).to_sym
 
-      if !QRERRORCORRECTLEVEL.has_key?(level)
+      level = (options[:level] || :h).to_sym
+      max_size = options[:max_size] || QRUtil.max_size
+
+      @data = case data
+      when String
+        QRSegment.new(data: data, mode: options[:mode])
+      when Array
+        raise QRCodeArgumentError, "Array must contain Hashes with :data and :mode keys" unless data.all? { |seg| seg.is_a?(Hash) && %i[data mode].all? { |s| seg.key? s } }
+        data.map { |seg| QRSegment.new(**seg) }
+      when QRSegment
+        data
+      else
+        raise QRCodeArgumentError, "data must be a String, QRSegment, or an Array"
+      end
+      @error_correct_level = QRERRORCORRECTLEVEL[level]
+
+      unless @error_correct_level
         raise QRCodeArgumentError, "Unknown error correction level `#{level.inspect}`"
       end
 
-      @data = string
+      size = options[:size] || minimum_version(limit: max_size)
 
-      mode = QRMODE_NAME[(options[:mode] || "").to_sym]
-      # If mode is not explicitely given choose mode according to data type
-      mode ||= if RQRCodeCore::QRNumeric.valid_data?(@data)
-        QRMODE_NAME[:number]
-      elsif QRAlphanumeric.valid_data?(@data)
-        QRMODE_NAME[:alphanumeric]
-      else
-        QRMODE_NAME[:byte_8bit]
-      end
-
-      max_size_array = QRMAXDIGITS[level][mode]
-      size = options[:size] || smallest_size_for(string, max_size_array)
-
-      if size > QRUtil.max_size
+      if size > max_size
         raise QRCodeArgumentError, "Given size greater than maximum possible size of #{QRUtil.max_size}"
       end
 
-      @error_correct_level = QRERRORCORRECTLEVEL[level]
       @version = size
       @module_count = @version * 4 + QRPOSITIONPATTERNLENGTH
       @modules = Array.new(@module_count)
-      @data_list =
-        case mode
-        when :mode_number
-          QRNumeric.new(@data)
-        when :mode_alpha_numk
-          QRAlphanumeric.new(@data)
-        else
-          QR8bitByte.new(@data)
-        end
-
+      @data_list = multi_segment? ? QRMulti.new(@data) : @data.writer
       @data_cache = nil
       make
     end
@@ -291,6 +212,11 @@ module RQRCodeCore
     # Return a symbol for current error connection level
     def error_correction_level
       QRERRORCORRECTLEVEL.invert[@error_correct_level]
+    end
+
+    # Return true if this QR Code includes multiple encoded segments
+    def multi_segment?
+      @data.is_a?(Array)
     end
 
     # Return a symbol in QRMODE.keys for current mode used
@@ -478,11 +404,16 @@ module RQRCodeCore
       end
     end
 
-    def smallest_size_for(string, max_size_array) #:nodoc:
-      l = string.bytesize
-      ver = max_size_array.index { |i| i >= l }
-      raise QRCodeRunTimeError, "code length overflow. (#{l} digits > any version capacity)" unless ver
-      ver + 1
+    def minimum_version(limit: QRUtil.max_size, version: 1)
+      raise QRCodeRunTimeError, "Data length exceed maximum capacity of version #{limit}" if version > limit
+
+      max_size_bits = QRMAXBITS[error_correction_level][version - 1]
+
+      size_bits = multi_segment? ? @data.sum { |seg| seg.size(version) } : @data.size(version)
+
+      return version if size_bits < max_size_bits
+
+      minimum_version(limit: limit, version: version + 1)
     end
 
     def extract_options!(arr) #:nodoc:

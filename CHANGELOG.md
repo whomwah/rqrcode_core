@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Added Multi Mode Support which allows for multi-segment encoding. Thanks to @ssayer
+
 ## [1.1.0] - 2021-07-01
 
 - Add a basic benchmark file
