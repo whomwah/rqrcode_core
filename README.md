@@ -128,6 +128,10 @@ $ rake standard # check
 $ rake standard:fix # fix
 ```
 
+## Experimental
+
+On 64 bit systems when generating lots of QR Codes the lib will consume more memory than on a 32 bit systems during the internal "right shift zero fill" steps (this is expected). In tests though, it's shown that by forcing the lib to think you're on a 32 systems greatly reduces the memory footprint. This could of course have undesired consequences too! but if you're happy to try, you can use the `RQRCODE_CORE_ARCH_BITS` ENV to make this change. e.g `RQRCODE_CORE_ARCH_BITS=32`.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/whomwah/rqrcode_core.
