@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2021-08-26
+
 - Added Multi Mode Support which allows for multi-segment encoding. Thanks to @ssayer
 
 ## [1.1.0] - 2021-07-01
@@ -35,7 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - fix `required_ruby_version` for Ruby 3 support
 
-[unreleased]: https://github.com/whomwah/rqrcode_core/compare/v1.1.0...HEAD
+[unreleased]: https://github.com/whomwah/rqrcode_core/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/whomwah/rqrcode_core/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/whomwah/rqrcode_core/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/whomwah/rqrcode_core/compare/v0.2.0...v1.0.0
 [0.2.0]: https://github.com/whomwah/rqrcode_core/compare/v0.1.2...v0.2.0
