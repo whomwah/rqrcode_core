@@ -86,13 +86,14 @@ module RQRCodeCore
     # Expects a string or array (for multi-segment encoding) to be parsed in, other args are optional
     #
     #   # data - the string, QRSegment or array of Hashes (with data:, mode: keys) you wish to encode
-    #   # size   - the size (Integer) of the qrcode (defaults to smallest size needed to encode the data)
-    #   # level  - the error correction level, can be:
+    #   # size - the size (Integer) of the QR Code (defaults to smallest size needed to encode the data)
+    #   # max_size - the max_size (Integer) of the QR Code (default RQRCodeCore::QRUtil.max_size)
+    #   # level - the error correction level, can be:
     #      * Level :l 7%  of code can be restored
     #      * Level :m 15% of code can be restored
     #      * Level :q 25% of code can be restored
     #      * Level :h 30% of code can be restored (default :h)
-    #   # mode   - the mode of the qrcode (defaults to alphanumeric or byte_8bit, depending on the input data, only used when data is a string):
+    #   # mode - the mode of the QR Code (defaults to alphanumeric or byte_8bit, depending on the input data, only used when data is a string):
     #      * :number
     #      * :alphanumeric
     #      * :byte_8bit

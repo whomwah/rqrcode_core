@@ -78,7 +78,9 @@ The library expects a string or array (for multiple encodings) to be parsed in, 
 ```
 data - the string or array you wish to encode
 
-size   - the size (integer) of the qrcode (defaults to smallest size needed to encode the string)
+size - the size (integer) of the QR Code (defaults to smallest size needed to encode the string)
+
+max_size - the max_size (Integer) of the QR Code (default RQRCodeCore::QRUtil.max_size)
 
 level  - the error correction level, can be:
   * Level :l 7%  of code can be restored
@@ -86,7 +88,7 @@ level  - the error correction level, can be:
   * Level :q 25% of code can be restored
   * Level :h 30% of code can be restored (default :h)
 
-mode   - the mode of the qrcode (defaults to alphanumeric or byte_8bit, depending on the input data):
+mode - the mode of the QR Code (defaults to alphanumeric or byte_8bit, depending on the input data, only used when data is a string):
   * :number
   * :alphanumeric
   * :byte_8bit
