@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.0] - 2021-08-26
 
-- Added Multi Mode Support which allows for multi-segment encoding. Thanks to @ssayer
+- Added Multi Mode Support which allows for multi-segment encoding. Thanks to [@ssayer](https://github.com/ssayer)
 
 ## [1.1.0] - 2021-07-01
 
