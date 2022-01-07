@@ -233,14 +233,14 @@ module RQRCodeCore
 
     protected
 
-    def make #:nodoc:
+    def make # :nodoc:
       prepare_common_patterns
       make_impl(false, get_best_mask_pattern)
     end
 
     private
 
-    def prepare_common_patterns #:nodoc:
+    def prepare_common_patterns # :nodoc:
       @modules.map! { |row| Array.new(@module_count) }
 
       place_position_probe_pattern(0, 0)
@@ -252,7 +252,7 @@ module RQRCodeCore
       @common_patterns = @modules.map(&:clone)
     end
 
-    def make_impl(test, mask_pattern) #:nodoc:
+    def make_impl(test, mask_pattern) # :nodoc:
       @modules = @common_patterns.map(&:clone)
 
       place_format_info(test, mask_pattern)
@@ -267,7 +267,7 @@ module RQRCodeCore
       map_data(@data_cache, mask_pattern)
     end
 
-    def place_position_probe_pattern(row, col) #:nodoc:
+    def place_position_probe_pattern(row, col) # :nodoc:
       (-1..7).each do |r|
         next unless (row + r).between?(0, @module_count - 1)
 
@@ -284,7 +284,7 @@ module RQRCodeCore
       end
     end
 
-    def get_best_mask_pattern #:nodoc:
+    def get_best_mask_pattern # :nodoc:
       min_lost_point = 0
       pattern = 0
 
@@ -300,13 +300,13 @@ module RQRCodeCore
       pattern
     end
 
-    def place_timing_pattern #:nodoc:
+    def place_timing_pattern # :nodoc:
       (8...@module_count - 8).each do |i|
         @modules[i][6] = @modules[6][i] = i % 2 == 0
       end
     end
 
-    def place_position_adjust_pattern #:nodoc:
+    def place_position_adjust_pattern # :nodoc:
       positions = QRUtil.get_pattern_positions(@version)
 
       positions.each do |row|
@@ -323,7 +323,7 @@ module RQRCodeCore
       end
     end
 
-    def place_version_info(test) #:nodoc:
+    def place_version_info(test) # :nodoc:
       bits = QRUtil.get_bch_version(@version)
 
       (0...18).each do |i|
@@ -333,7 +333,7 @@ module RQRCodeCore
       end
     end
 
-    def place_format_info(test, mask_pattern) #:nodoc:
+    def place_format_info(test, mask_pattern) # :nodoc:
       data = (@error_correct_level << 3 | mask_pattern)
       bits = QRUtil.get_bch_format_info(data)
 
@@ -365,7 +365,7 @@ module RQRCodeCore
       @modules[@module_count - 8][8] = !test
     end
 
-    def map_data(data, mask_pattern) #:nodoc:
+    def map_data(data, mask_pattern) # :nodoc:
       inc = -1
       row = @module_count - 1
       bit_index = 7
@@ -416,12 +416,12 @@ module RQRCodeCore
       minimum_version(limit: limit, version: version + 1)
     end
 
-    def extract_options!(arr) #:nodoc:
+    def extract_options!(arr) # :nodoc:
       arr.last.is_a?(::Hash) ? arr.pop : {}
     end
 
     class << self
-      def count_max_data_bits(rs_blocks) #:nodoc:
+      def count_max_data_bits(rs_blocks) # :nodoc:
         max_data_bytes = rs_blocks.reduce(0) do |sum, rs_block|
           sum + rs_block.data_count
         end
@@ -429,7 +429,7 @@ module RQRCodeCore
         max_data_bytes * 8
       end
 
-      def create_data(version, error_correct_level, data_list) #:nodoc:
+      def create_data(version, error_correct_level, data_list) # :nodoc:
         rs_blocks = QRRSBlock.get_rs_blocks(version, error_correct_level)
         max_data_bits = QRCode.count_max_data_bits(rs_blocks)
         buffer = QRBitBuffer.new(version)
@@ -446,7 +446,7 @@ module RQRCodeCore
         QRCode.create_bytes(buffer, rs_blocks)
       end
 
-      def create_bytes(buffer, rs_blocks) #:nodoc:
+      def create_bytes(buffer, rs_blocks) # :nodoc:
         offset = 0
         max_dc_count = 0
         max_ec_count = 0
