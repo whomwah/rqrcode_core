@@ -7,7 +7,7 @@
 
 Features:
 
-* `rqrcode_core` is a Ruby only library. It requires no native libraries. Just Ruby!
+* `rqrcode_core` is a Ruby only library. It requires no 3rd party libraries. Just Ruby!
 * It is an encoding library. You can't decode QR Codes with it.
 * The interface is simple and assumes you just want to encode a string into a QR Code, but also allows for encoding multiple segments.
 * QR Code is trademarked by Denso Wave inc.
