@@ -62,7 +62,7 @@ This will create a QR Code with byte encoded, alphanumeric and number segments. 
 require "rqrcode_core"
 
 qr = RQRCodeCore::QRCode.new("https://kyan.com")
-qr.rows.each do |row|
+qr.modules.each do |row|
   row.each do |col|
     print col ? "#" : " "
   end
