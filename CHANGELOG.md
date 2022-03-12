@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   This has been shown to greatly reduce the memory usage but I can't prove it doesn't break anything for all people.
   Use at your own risk.
 
+- Fixed the 'Do Your Own Rendering' example code to reflect the current interface.
+
 ## [1.2.0] - 2021-08-26
 
 - Added Multi Mode Support which allows for multi-segment encoding. Thanks to [@ssayer](https://github.com/ssayer)
