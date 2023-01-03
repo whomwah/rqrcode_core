@@ -36,7 +36,7 @@ module RQRCodeCore
         [1, 8, 0]
       end
 
-      (data_length / chunk_size) * bit_length + ((data_length % chunk_size) == 0 ? 0 : extra)
+      (data_length / chunk_size) * bit_length + (((data_length % chunk_size) == 0) ? 0 : extra)
     end
 
     def writer

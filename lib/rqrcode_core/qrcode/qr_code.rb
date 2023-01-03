@@ -288,7 +288,7 @@ module RQRCodeCore
       min_lost_point = 0
       pattern = 0
 
-      (0...8).each do |i|
+      8.times do |i|
         make_impl(true, i)
         lost_point = QRUtil.get_lost_points(modules)
 
@@ -326,7 +326,7 @@ module RQRCodeCore
     def place_version_info(test) # :nodoc:
       bits = QRUtil.get_bch_version(@version)
 
-      (0...18).each do |i|
+      18.times do |i|
         mod = (!test && ((bits >> i) & 1) == 1)
         @modules[(i / 3).floor][ i % 3 + @module_count - 8 - 3 ] = mod
         @modules[i % 3 + @module_count - 8 - 3][ (i / 3).floor ] = mod
@@ -375,7 +375,7 @@ module RQRCodeCore
         col -= 1 if col <= 6
 
         loop do
-          (0...2).each do |c|
+          2.times do |c|
             if @modules[row][col - c].nil?
               dark = false
               if byte_index < data.size && !data[byte_index].nil?
@@ -473,7 +473,7 @@ module RQRCodeCore
           ecdata_block = Array.new(rs_poly.get_length - 1)
           ecdata_block.size.times do |i|
             mod_index = i + mod_poly.get_length - ecdata_block.size
-            ecdata_block[i] = mod_index >= 0 ? mod_poly.get(mod_index) : 0
+            ecdata_block[i] = (mod_index >= 0) ? mod_poly.get(mod_index) : 0
           end
           ecdata[r] = ecdata_block
         end
