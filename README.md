@@ -51,7 +51,11 @@ x xxx x  xxxxx x       xx x xxx x
 
 ```ruby
 $ require "rqrcode_core"
-$ qr = RQRCodeCore::QRCode.new([{data: "byteencoded", mode: :byte_8bit}, {data: "A1" * 100, mode: :alphanumeric}, {data: "1" * 500, mode: :number}])
+$ qr = RQRCodeCore::QRCode.new([
+  {data: "byteencoded", mode: :byte_8bit},
+  {data: "A1" * 100, mode: :alphanumeric},
+  {data: "1" * 500, mode: :number}
+])
 ```
 
 This will create a QR Code with byte encoded, alphanumeric and number segments. Any combination of encodings/segments will work provided it fits within size limits.
@@ -98,7 +102,7 @@ mode - the mode of the QR Code (defaults to alphanumeric or byte_8bit, depending
 #### Example
 
 ```ruby
-RQRCodeCore::QRCode.new("http://kyan.com", size: 1, level: :m, mode: :alphanumeric)
+RQRCodeCore::QRCode.new("http://kyan.com", size: 2, level: :m, mode: :byte_8bit)
 ```
 
 ## Development
