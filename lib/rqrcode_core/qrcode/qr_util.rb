@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'demerit_same_color'
+require_relative 'visit_blocks'
 
 module RQRCodeCore
   class QRUtil
@@ -47,14 +47,16 @@ module RQRCodeCore
       [6, 30, 58, 86, 114, 142, 170]
     ].freeze
 
-    G15 = 1 << 10 | 1 << 8 | 1 << 5 | 1 << 4 | 1 << 2 | 1 << 1 | 1 << 0
-    G18 = 1 << 12 | 1 << 11 | 1 << 10 | 1 << 9 | 1 << 8 | 1 << 5 | 1 << 2 | 1 << 0
-    G15_MASK = 1 << 14 | 1 << 12 | 1 << 10 | 1 << 4 | 1 << 1
+    G15 = (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0)
+    G18 = (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0)
+    G15_MASK = (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1)
 
     DEMERIT_POINTS_1 = 3
     DEMERIT_POINTS_2 = 3
     DEMERIT_POINTS_3 = 40
     DEMERIT_POINTS_4 = 10
+
+    DEMERIT_POINTS_1_THRESHOLD = 5
 
     BITS_FOR_MODE = {
       QRMODE[:mode_number] => [10, 12, 14],
@@ -69,7 +71,7 @@ module RQRCodeCore
     # on 64 bit systems greatly reduces the memory footprint. You can use
     # RQRCODE_CORE_ARCH_BITS to make this change but beware it may also
     # have unintended consequences so use at your own risk.
-    ARCH_BITS = ENV.fetch("RQRCODE_CORE_ARCH_BITS", nil)&.to_i || 1.size * 8
+    ARCH_BITS = ENV.fetch('RQRCODE_CORE_ARCH_BITS', nil)&.to_i || (1.size * 8)
 
     def self.max_size
       PATTERN_POSITION_TABLE.count
@@ -155,37 +157,29 @@ module RQRCodeCore
     def self.get_lost_points(modules)
       demerit_points = 0
 
-      demerit_points += QRUtil.demerit_points_1_same_color(modules)
-      demerit_points += QRUtil.demerit_points_2_full_blocks(modules)
-      demerit_points += QRUtil.demerit_points_3_dangerous_patterns(modules)
-      demerit_points += QRUtil.demerit_points_4_dark_ratio(modules)
-
-      demerit_points
-    end
-
-    def self.demerit_points_1_same_color(modules)
-      DemeritSameColor.new(modules, DEMERIT_POINTS_1).points
-    end
-
-    def self.demerit_points_2_full_blocks(modules)
-      demerit_points = 0
-      module_count = modules.size
-
-      # level 2
-      (0...(module_count - 1)).each do |row|
-        (0...(module_count - 1)).each do |col|
-          count = 0
-          count += 1 if modules[row][col]
-          count += 1 if modules[row + 1][col]
-          count += 1 if modules[row][col + 1]
-          count += 1 if modules[row + 1][col + 1]
-          if count == 0 || count == 4
-            demerit_points += DEMERIT_POINTS_2
-          end
+      if modules.size >= 3
+        VisitBlocks.new(modules).visit do |*args|
+          demerit_points += QRUtil.demerit_points_1_same_color(*args)
+          demerit_points += QRUtil.demerit_points_2_full_blocks(*args)
         end
       end
 
+      demerit_points += QRUtil.demerit_points_3_dangerous_patterns(modules)
+      demerit_points += QRUtil.demerit_points_4_dark_ratio(modules)
       demerit_points
+    end
+
+    def self.demerit_points_1_same_color(tl, t, tr, l, c, r, bl, b, br)
+      same_count = [tl, t, tr, l, r, bl, b, br].select { _1 == c }.count
+      return 0 unless same_count > DEMERIT_POINTS_1_THRESHOLD
+
+      DEMERIT_POINTS_1 + same_count - DEMERIT_POINTS_1_THRESHOLD
+    end
+
+    def self.demerit_points_2_full_blocks(_tl, _t, _tr, _l, c, r, _bl, b, br)
+      return DEMERIT_POINTS_2 if c == r && c == b && c == br
+
+      0
     end
 
     def self.demerit_points_3_dangerous_patterns(modules)
