@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'demerit_same_color'
+
 module RQRCodeCore
   class QRUtil
     PATTERN_POSITION_TABLE = [
@@ -162,34 +164,7 @@ module RQRCodeCore
     end
 
     def self.demerit_points_1_same_color(modules)
-      demerit_points = 0
-      module_count = modules.size
-
-      # level1
-      (0...module_count).each do |row|
-        (0...module_count).each do |col|
-          same_count = 0
-          dark = modules[row][col]
-
-          (-1..1).each do |r|
-            next if row + r < 0 || module_count <= row + r
-
-            (-1..1).each do |c|
-              next if col + c < 0 || module_count <= col + c
-              next if r == 0 && c == 0
-              if dark == modules[row + r][col + c]
-                same_count += 1
-              end
-            end
-          end
-
-          if same_count > 5
-            demerit_points += (DEMERIT_POINTS_1 + same_count - 5)
-          end
-        end
-      end
-
-      demerit_points
+      DemeritSameColor.new(modules, DEMERIT_POINTS_1).points
     end
 
     def self.demerit_points_2_full_blocks(modules)
