@@ -184,38 +184,25 @@ module RQRCodeCore
 
     def self.demerit_points_3_dangerous_patterns(modules)
       demerit_points = 0
-      module_count = modules.size
 
       # level 3
       modules.each do |row|
-        (module_count - 6).times do |col_idx|
-          if row[col_idx] &&
-              !row[col_idx + 1] &&
-              row[col_idx + 2] &&
-              row[col_idx + 3] &&
-              row[col_idx + 4] &&
-              !row[col_idx + 5] &&
-              row[col_idx + 6]
-            demerit_points += DEMERIT_POINTS_3
-          end
+        row.each_cons(7) do |cells|
+          demerit_points += DEMERIT_POINTS_3 if dangerous_pattern?(cells)
         end
       end
 
-      (0...module_count).each do |col|
-        (0...(module_count - 6)).each do |row|
-          if modules[row][col] &&
-              !modules[row + 1][col] &&
-              modules[row + 2][col] &&
-              modules[row + 3][col] &&
-              modules[row + 4][col] &&
-              !modules[row + 5][col] &&
-              modules[row + 6][col]
-            demerit_points += DEMERIT_POINTS_3
-          end
+      modules.transpose.each do |col|
+        col.each_cons(7) do |cells|
+          demerit_points += DEMERIT_POINTS_3 if dangerous_pattern?(cells)
         end
       end
 
       demerit_points
+    end
+
+    def self.dangerous_pattern?(cells)
+      cells[0] && !cells[1] && cells[2] && cells[3] && cells[4] && !cells[5] && cells[6]
     end
 
     def self.demerit_points_4_dark_ratio(modules)
