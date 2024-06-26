@@ -1,4 +1,14 @@
 module RQRCodeCore
+  # Centralizes iterating over the modules.
+  #
+  # For large (e.g. 65x65) module counts, this can be a slow process,
+  # thus some optimizations where made:
+  #
+  # * `transpose` and `each_cons` are C methods so they should be fast.
+  # * Loop nesting is kept at a minimum, runtime adds up quickly for large module counts.
+  # * We try to avoid random array accesses (preferring linear traversals).
+  # * Unpacking the neighbour values here and passing them to the visitor prevents random
+  #   array accesses to {modules} in the visitor.
   class VisitBlocks
     def initialize(modules)
       @modules = modules
@@ -25,6 +35,9 @@ module RQRCodeCore
     def visit_row(above, current, below, visitor)
       columns = [[], *[above, current, below].transpose, []]
 
+      # Performance: Compute blocks before calling the visitor,
+      # it might help the CPU with memory dependence prediction
+      # if we first iterate through the whole array.
       blocks = columns.each_cons(3).map do |left, current, right|
         tl, l, bl = left
         t, c, b = current

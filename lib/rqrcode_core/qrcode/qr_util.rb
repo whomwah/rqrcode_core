@@ -158,6 +158,8 @@ module RQRCodeCore
       demerit_points = 0
 
       if modules.size >= 3
+        # Performance: Iterate over the blocks only once, perform all block related
+        # work in one step.
         VisitBlocks.new(modules).visit do |*args|
           demerit_points += QRUtil.demerit_points_1_same_color(*args)
           demerit_points += QRUtil.demerit_points_2_full_blocks(*args)
@@ -183,9 +185,10 @@ module RQRCodeCore
     end
 
     def self.demerit_points_3_dangerous_patterns(modules)
+      # Performance: `transpose` and `each_cons` are C methods,
+      # they should be fast.
       demerit_points = 0
 
-      # level 3
       modules.each do |row|
         row.each_cons(7) do |cells|
           demerit_points += DEMERIT_POINTS_3 if dangerous_pattern?(cells)
