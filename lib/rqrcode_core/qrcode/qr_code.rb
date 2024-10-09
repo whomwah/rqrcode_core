@@ -274,8 +274,8 @@ module RQRCodeCore
         (-1..7).each do |c|
           next unless (col + c).between?(0, @module_count - 1)
 
-          is_vert_line = (r.between?(0, 6) && (c == 0 || c == 6))
-          is_horiz_line = (c.between?(0, 6) && (r == 0 || r == 6))
+          is_vert_line = r.between?(0, 6) && (c == 0 || c == 6)
+          is_horiz_line = c.between?(0, 6) && (r == 0 || r == 6)
           is_square = r.between?(2, 4) && c.between?(2, 4)
 
           is_part_of_probe = is_vert_line || is_horiz_line || is_square
@@ -315,7 +315,7 @@ module RQRCodeCore
 
           (-2..2).each do |r|
             (-2..2).each do |c|
-              is_part_of_pattern = (r.abs == 2 || c.abs == 2 || (r == 0 && c == 0))
+              is_part_of_pattern = r.abs == 2 || c.abs == 2 || (r == 0 && c == 0)
               @modules[row + r][col + c] = is_part_of_pattern
             end
           end
@@ -327,7 +327,7 @@ module RQRCodeCore
       bits = QRUtil.get_bch_version(@version)
 
       18.times do |i|
-        mod = (!test && ((bits >> i) & 1) == 1)
+        mod = !test && ((bits >> i) & 1) == 1
         @modules[(i / 3).floor][ i % 3 + @module_count - 8 - 3 ] = mod
         @modules[i % 3 + @module_count - 8 - 3][ (i / 3).floor ] = mod
       end
@@ -338,7 +338,7 @@ module RQRCodeCore
       bits = QRUtil.get_bch_format_info(data)
 
       QRFORMATINFOLENGTH.times do |i|
-        mod = (!test && ((bits >> i) & 1) == 1)
+        mod = !test && ((bits >> i) & 1) == 1
 
         # vertical
         row = if i < 6
