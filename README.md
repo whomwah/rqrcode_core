@@ -11,6 +11,7 @@ Features:
 * It is an encoding library. You can't decode QR Codes with it.
 * The interface is simple and assumes you just want to encode a string into a QR Code, but also allows for encoding multiple segments.
 * QR Code is trademarked by Denso Wave inc.
+* Minimum Ruby version is `>= 3.0.0`
 
 `rqrcode_core` is the basis of the popular `rqrcode` gem [https://github.com/whomwah/rqrcode]. This gem allows you to generate different renderings of your QR Code, including `png`, `svg` and `ansi`.
 
