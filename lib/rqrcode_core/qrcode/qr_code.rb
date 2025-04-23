@@ -2,9 +2,9 @@
 
 module RQRCodeCore
   QRMODE = {
-    mode_number: 1 << 0,
-    mode_alpha_numk: 1 << 1,
-    mode_8bit_byte: 1 << 2
+    mode_number: 1 << 0,      # 1 (binary: 0001)
+    mode_alpha_numk: 1 << 1,  # 2 (binary: 0010)
+    mode_8bit_byte: 1 << 2   # 4 (binary: 0100)
   }.freeze
 
   QRMODE_NAME = {
@@ -97,7 +97,6 @@ module RQRCodeCore
     #      * :number
     #      * :alphanumeric
     #      * :byte_8bit
-    #      * :kanji
     #
     #   qr = RQRCodeCore::QRCode.new('hello world', size: 1, level: :m, mode: :alphanumeric)
     #   segment_qr = QRCodeCore::QRCode.new({ data: 'foo', mode: :byte_8bit })
