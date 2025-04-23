@@ -254,7 +254,8 @@ module RQRCodeCore
         sum + col.count(true)
       end
 
-      ratio = dark_count / (modules.size * modules.size)
+      # Convert to float to prevent integer division
+      ratio = dark_count.to_f / (modules.size * modules.size)
       ratio_delta = (100 * ratio - 50).abs / 5
 
       ratio_delta * DEMERIT_POINTS_4
