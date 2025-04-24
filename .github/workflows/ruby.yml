@@ -3,11 +3,9 @@ name: rqrcode_core
 on:
   push:
     branches:
-      - master
-      - release/*
-  pull_request:
-    branches:
-      - master
+      - main
+      - release
+  pull_request: # Runs on any PR regardless of target branch
   workflow_dispatch:
 
 jobs:
