@@ -8,7 +8,7 @@ module RQRCodeCore
       @data = data
       @mode = QRMODE_NAME.dig(mode&.to_sym)
 
-      # If mode is not explicitely found choose mode according to data type
+      # If mode is not explicitly found choose mode according to data type
       @mode ||= if RQRCodeCore::QRNumeric.valid_data?(@data)
         QRMODE_NAME[:number]
       elsif QRAlphanumeric.valid_data?(@data)

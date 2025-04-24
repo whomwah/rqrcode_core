@@ -57,8 +57,7 @@ module RQRCodeCore
     BITS_FOR_MODE = {
       QRMODE[:mode_number] => [10, 12, 14],
       QRMODE[:mode_alpha_numk] => [9, 11, 13],
-      QRMODE[:mode_8bit_byte] => [8, 16, 16],
-      QRMODE[:mode_kanji] => [8, 10, 12]
+      QRMODE[:mode_8bit_byte] => [8, 16, 16]
     }.freeze
 
     # This value is used during the right shift zero fill step. It is
@@ -255,7 +254,8 @@ module RQRCodeCore
         sum + col.count(true)
       end
 
-      ratio = dark_count / (modules.size * modules.size)
+      # Convert to float to prevent integer division
+      ratio = dark_count.to_f / (modules.size * modules.size)
       ratio_delta = (100 * ratio - 50).abs / 5
 
       ratio_delta * DEMERIT_POINTS_4
