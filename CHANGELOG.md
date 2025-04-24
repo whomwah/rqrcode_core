@@ -7,10 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Add option to use ENV `RQRCODE_CORE_ARCH_BITS` to overide the bits value (32 or 64) used during the encoding process.
+## [2.0.0] - 2025-04-24
+
+- Various README updates
+- Fix for issue #43
+- Fix for issue #42
+- Drop Ruby < 3 to keep up with dependency updates
+- Add option to use ENV `RQRCODE_CORE_ARCH_BITS` to override the bits value (32 or 64) used during the encoding process.
   This has been shown to greatly reduce the memory usage but I can't prove it doesn't break anything for all people.
   Use at your own risk.
-
 - Fixed the 'Do Your Own Rendering' example code to reflect the current interface.
 
 ## [1.2.0] - 2021-08-26
@@ -35,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Breaking Changes
 
-- Very niche but a breaking change never the less. The `to_s` method *no longer* accepts the `:true` and `:false` arguments, but prefers `:dark` and `:light`.
+- Very niche but a breaking change never the less. The `to_s` method _no longer_ accepts the `:true` and `:false` arguments, but prefers `:dark` and `:light`.
 
 ## [0.2.0] - 2020-12-26
 
@@ -43,7 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - fix `required_ruby_version` for Ruby 3 support
 
-[unreleased]: https://github.com/whomwah/rqrcode_core/compare/v1.2.0...HEAD
+[unreleased]: https://github.com/whomwah/rqrcode_core/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/whomwah/rqrcode_core/compare/v1.2.0...2.0.0
 [1.2.0]: https://github.com/whomwah/rqrcode_core/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/whomwah/rqrcode_core/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/whomwah/rqrcode_core/compare/v0.2.0...v1.0.0

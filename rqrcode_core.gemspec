@@ -16,6 +16,10 @@ Gem::Specification.new do |spec|
   EOF
   spec.homepage = "https://github.com/whomwah/rqrcode_core"
   spec.license = "MIT"
+  spec.metadata = {
+    "bug_tracker_uri" => "https://github.com/whomwah/rqrcode_core/issues",
+    "changelog_uri" => "https://github.com/whomwah/rqrcode_core/blob/main/CHANGELOG.md"
+  }
 
   spec.files = Dir.chdir(File.expand_path("..", __FILE__)) do
     `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
