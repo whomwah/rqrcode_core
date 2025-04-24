@@ -3,17 +3,63 @@ require "test_helper"
 class RQRCodeCore::BaseTest < Minitest::Test
   require_relative "data"
 
-  def test_no_data_given
-    assert_raises(RQRCodeCore::QRCodeArgumentError) {
+  def test_qrcode_argument_error
+    error = assert_raises(RQRCodeCore::QRCodeArgumentError) do
       RQRCodeCore::QRCode.new(size: 1, level: :h)
-      RQRCodeCore::QRCode.new(size: 1)
-      RQRCodeCore::QRCode.new
-    }
+    end
+    assert_equal "data must be a String, QRSegment, or an Array", error.message
 
-    assert_raises(RQRCodeCore::QRCodeRunTimeError) {
-      qr = RQRCodeCore::QRCode.new("duncan")
-      qr.checked?(0, 999999)
-    }
+    error = assert_raises(RQRCodeCore::QRCodeArgumentError) do
+      RQRCodeCore::QRCode.new(nil)
+    end
+    assert_equal "data must be a String, QRSegment, or an Array", error.message
+
+    error = assert_raises(RQRCodeCore::QRCodeArgumentError) do
+      RQRCodeCore::QRCode.new({})
+    end
+    assert_equal "data must be a String, QRSegment, or an Array", error.message
+
+    error = assert_raises(RQRCodeCore::QRCodeArgumentError) do
+      RQRCodeCore::QRCode.new(123)
+    end
+    assert_equal "data must be a String, QRSegment, or an Array", error.message
+
+    error = assert_raises(RQRCodeCore::QRCodeArgumentError) do
+      assert RQRCodeCore::QRCode.new("10000000000000000000", size: 41, level: :h)
+    end
+    assert_equal "Given size greater than maximum possible size of 40", error.message
+
+    error = assert_raises(RQRCodeCore::QRCodeArgumentError) do
+      assert RQRCodeCore::QRCode.new("hello", size: 1, level: :a)
+    end
+    assert_equal "Unknown error correction level `:a`", error.message
+  end
+
+  def test_qrcode_runtime_error
+    error = assert_raises(RQRCodeCore::QRCodeRunTimeError) do
+      RQRCodeCore::QRCode.new("duncan").checked?(0, 999999)
+    end
+    assert_equal "Invalid row/column pair: 0, 999999", error.message
+
+    error = assert_raises(RQRCodeCore::QRCodeRunTimeError) do
+      assert RQRCodeCore::QRCode.new("10000000000000000000", size: 1, level: :h)
+    end
+    assert_equal "code length overflow. (81>72). (Try a larger size!)", error.message
+
+    error = assert_raises(RQRCodeCore::QRCodeRunTimeError) do
+      assert RQRCodeCore::QRUtil.get_mask(9, 1, 2)
+    end
+    assert_equal "bad mask_pattern: 9", error.message
+
+    error = assert_raises(RQRCodeCore::QRCodeRunTimeError) do
+      assert RQRCodeCore::QRUtil.get_length_in_bits(:duncan, 1)
+    end
+    assert_equal "Unknown mode: duncan", error.message
+
+    error = assert_raises(RQRCodeCore::QRCodeRunTimeError) do
+      assert RQRCodeCore::QRUtil.get_length_in_bits(1 << 0, 41)
+    end
+    assert_equal "Unknown version: 41", error.message
   end
 
   def test_H_
@@ -118,6 +164,8 @@ class RQRCodeCore::BaseTest < Minitest::Test
     assert RQRCodeCore::QRCode.new("2 1058 657682")
     assert RQRCodeCore::QRCode.new("40952", size: 1, level: :h)
     assert RQRCodeCore::QRCode.new("40932", size: 1, level: :h)
+    assert RQRCodeCore::QRCode.new("", size: 1, level: :h)
+    assert RQRCodeCore::QRCode.new("0", size: 1, level: :h)
   end
 
   def test_exceed_max_size
@@ -154,5 +202,12 @@ class RQRCodeCore::BaseTest < Minitest::Test
   def test_utf8
     qr = RQRCodeCore::QRCode.new("тест")
     assert_equal qr.modules, MATRIX_UTF8_RU_TEST
+  end
+
+  def test_large_integer
+    RQRCodeCore::QRCode.new((1 << 64).to_s, mode: :number)
+    RQRCodeCore::QRCode.new(((1 << 64) + 1).to_s, mode: :number)
+  rescue => e
+    flunk(e)
   end
 end

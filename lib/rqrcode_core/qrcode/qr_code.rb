@@ -2,9 +2,9 @@
 
 module RQRCodeCore
   QRMODE = {
-    mode_number: 1 << 0,
-    mode_alpha_numk: 1 << 1,
-    mode_8bit_byte: 1 << 2
+    mode_number: 1 << 0,      # 1 (binary: 0001)
+    mode_alpha_numk: 1 << 1,  # 2 (binary: 0010)
+    mode_8bit_byte: 1 << 2   # 4 (binary: 0100)
   }.freeze
 
   QRMODE_NAME = {
@@ -97,7 +97,6 @@ module RQRCodeCore
     #      * :number
     #      * :alphanumeric
     #      * :byte_8bit
-    #      * :kanji
     #
     #   qr = RQRCodeCore::QRCode.new('hello world', size: 1, level: :m, mode: :alphanumeric)
     #   segment_qr = QRCodeCore::QRCode.new({ data: 'foo', mode: :byte_8bit })
@@ -233,14 +232,14 @@ module RQRCodeCore
 
     protected
 
-    def make #:nodoc:
+    def make # :nodoc:
       prepare_common_patterns
       make_impl(false, get_best_mask_pattern)
     end
 
     private
 
-    def prepare_common_patterns #:nodoc:
+    def prepare_common_patterns # :nodoc:
       @modules.map! { |row| Array.new(@module_count) }
 
       place_position_probe_pattern(0, 0)
@@ -252,7 +251,7 @@ module RQRCodeCore
       @common_patterns = @modules.map(&:clone)
     end
 
-    def make_impl(test, mask_pattern) #:nodoc:
+    def make_impl(test, mask_pattern) # :nodoc:
       @modules = @common_patterns.map(&:clone)
 
       place_format_info(test, mask_pattern)
@@ -267,15 +266,15 @@ module RQRCodeCore
       map_data(@data_cache, mask_pattern)
     end
 
-    def place_position_probe_pattern(row, col) #:nodoc:
+    def place_position_probe_pattern(row, col) # :nodoc:
       (-1..7).each do |r|
         next unless (row + r).between?(0, @module_count - 1)
 
         (-1..7).each do |c|
           next unless (col + c).between?(0, @module_count - 1)
 
-          is_vert_line = (r.between?(0, 6) && (c == 0 || c == 6))
-          is_horiz_line = (c.between?(0, 6) && (r == 0 || r == 6))
+          is_vert_line = r.between?(0, 6) && (c == 0 || c == 6)
+          is_horiz_line = c.between?(0, 6) && (r == 0 || r == 6)
           is_square = r.between?(2, 4) && c.between?(2, 4)
 
           is_part_of_probe = is_vert_line || is_horiz_line || is_square
@@ -284,11 +283,11 @@ module RQRCodeCore
       end
     end
 
-    def get_best_mask_pattern #:nodoc:
+    def get_best_mask_pattern # :nodoc:
       min_lost_point = 0
       pattern = 0
 
-      (0...8).each do |i|
+      8.times do |i|
         make_impl(true, i)
         lost_point = QRUtil.get_lost_points(modules)
 
@@ -300,13 +299,13 @@ module RQRCodeCore
       pattern
     end
 
-    def place_timing_pattern #:nodoc:
+    def place_timing_pattern # :nodoc:
       (8...@module_count - 8).each do |i|
         @modules[i][6] = @modules[6][i] = i % 2 == 0
       end
     end
 
-    def place_position_adjust_pattern #:nodoc:
+    def place_position_adjust_pattern # :nodoc:
       positions = QRUtil.get_pattern_positions(@version)
 
       positions.each do |row|
@@ -315,7 +314,7 @@ module RQRCodeCore
 
           (-2..2).each do |r|
             (-2..2).each do |c|
-              is_part_of_pattern = (r.abs == 2 || c.abs == 2 || (r == 0 && c == 0))
+              is_part_of_pattern = r.abs == 2 || c.abs == 2 || (r == 0 && c == 0)
               @modules[row + r][col + c] = is_part_of_pattern
             end
           end
@@ -323,22 +322,22 @@ module RQRCodeCore
       end
     end
 
-    def place_version_info(test) #:nodoc:
+    def place_version_info(test) # :nodoc:
       bits = QRUtil.get_bch_version(@version)
 
-      (0...18).each do |i|
-        mod = (!test && ((bits >> i) & 1) == 1)
+      18.times do |i|
+        mod = !test && ((bits >> i) & 1) == 1
         @modules[(i / 3).floor][ i % 3 + @module_count - 8 - 3 ] = mod
         @modules[i % 3 + @module_count - 8 - 3][ (i / 3).floor ] = mod
       end
     end
 
-    def place_format_info(test, mask_pattern) #:nodoc:
+    def place_format_info(test, mask_pattern) # :nodoc:
       data = (@error_correct_level << 3 | mask_pattern)
       bits = QRUtil.get_bch_format_info(data)
 
       QRFORMATINFOLENGTH.times do |i|
-        mod = (!test && ((bits >> i) & 1) == 1)
+        mod = !test && ((bits >> i) & 1) == 1
 
         # vertical
         row = if i < 6
@@ -365,7 +364,7 @@ module RQRCodeCore
       @modules[@module_count - 8][8] = !test
     end
 
-    def map_data(data, mask_pattern) #:nodoc:
+    def map_data(data, mask_pattern) # :nodoc:
       inc = -1
       row = @module_count - 1
       bit_index = 7
@@ -375,7 +374,7 @@ module RQRCodeCore
         col -= 1 if col <= 6
 
         loop do
-          (0...2).each do |c|
+          2.times do |c|
             if @modules[row][col - c].nil?
               dark = false
               if byte_index < data.size && !data[byte_index].nil?
@@ -416,12 +415,12 @@ module RQRCodeCore
       minimum_version(limit: limit, version: version + 1)
     end
 
-    def extract_options!(arr) #:nodoc:
+    def extract_options!(arr) # :nodoc:
       arr.last.is_a?(::Hash) ? arr.pop : {}
     end
 
     class << self
-      def count_max_data_bits(rs_blocks) #:nodoc:
+      def count_max_data_bits(rs_blocks) # :nodoc:
         max_data_bytes = rs_blocks.reduce(0) do |sum, rs_block|
           sum + rs_block.data_count
         end
@@ -429,7 +428,7 @@ module RQRCodeCore
         max_data_bytes * 8
       end
 
-      def create_data(version, error_correct_level, data_list) #:nodoc:
+      def create_data(version, error_correct_level, data_list) # :nodoc:
         rs_blocks = QRRSBlock.get_rs_blocks(version, error_correct_level)
         max_data_bits = QRCode.count_max_data_bits(rs_blocks)
         buffer = QRBitBuffer.new(version)
@@ -446,7 +445,7 @@ module RQRCodeCore
         QRCode.create_bytes(buffer, rs_blocks)
       end
 
-      def create_bytes(buffer, rs_blocks) #:nodoc:
+      def create_bytes(buffer, rs_blocks) # :nodoc:
         offset = 0
         max_dc_count = 0
         max_ec_count = 0
@@ -473,7 +472,7 @@ module RQRCodeCore
           ecdata_block = Array.new(rs_poly.get_length - 1)
           ecdata_block.size.times do |i|
             mod_index = i + mod_poly.get_length - ecdata_block.size
-            ecdata_block[i] = mod_index >= 0 ? mod_poly.get(mod_index) : 0
+            ecdata_block[i] = (mod_index >= 0) ? mod_poly.get(mod_index) : 0
           end
           ecdata[r] = ecdata_block
         end

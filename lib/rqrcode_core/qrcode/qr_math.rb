@@ -6,7 +6,7 @@ module RQRCodeCore
       exp_table = Array.new(256)
       log_table = Array.new(256)
 
-      (0...8).each do |i|
+      8.times do |i|
         exp_table[i] = 1 << i
       end
 
@@ -17,7 +17,7 @@ module RQRCodeCore
           ^ exp_table[i - 8]
       end
 
-      (0...255).each do |i|
+      255.times do |i|
         log_table[exp_table[i]] = i
       end
 

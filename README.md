@@ -7,10 +7,11 @@
 
 Features:
 
-* `rqrcode_core` is a Ruby only library. It requires no native libraries. Just Ruby!
-* It is an encoding library. You can't decode QR Codes with it.
-* The interface is simple and assumes you just want to encode a string into a QR Code, but also allows for encoding multiple segments.
-* QR Code is trademarked by Denso Wave inc.
+- `rqrcode_core` is a Ruby only library. It requires no 3rd party libraries. Just Ruby!
+- It is an encoding library. You can't decode QR Codes with it.
+- The interface is simple and assumes you just want to encode a string into a QR Code, but also allows for encoding multiple segments.
+- QR Code is trademarked by Denso Wave inc.
+- Minimum Ruby version is `>= 3.0.0`
 
 `rqrcode_core` is the basis of the popular `rqrcode` gem [https://github.com/whomwah/rqrcode]. This gem allows you to generate different renderings of your QR Code, including `png`, `svg` and `ansi`.
 
@@ -51,7 +52,11 @@ x xxx x  xxxxx x       xx x xxx x
 
 ```ruby
 $ require "rqrcode_core"
-$ qr = RQRCodeCore::QRCode.new([{data: "byteencoded", mode: :byte_8bit}, {data: "A1" * 100, mode: :alphanumeric}, {data: "1" * 500, mode: :number}])
+$ qr = RQRCodeCore::QRCode.new([
+  {data: "byteencoded", mode: :byte_8bit},
+  {data: "A1" * 100, mode: :alphanumeric},
+  {data: "1" * 500, mode: :number}
+])
 ```
 
 This will create a QR Code with byte encoded, alphanumeric and number segments. Any combination of encodings/segments will work provided it fits within size limits.
@@ -62,7 +67,7 @@ This will create a QR Code with byte encoded, alphanumeric and number segments. 
 require "rqrcode_core"
 
 qr = RQRCodeCore::QRCode.new("https://kyan.com")
-qr.rows.each do |row|
+qr.modules.each do |row|
   row.each do |col|
     print col ? "#" : " "
   end
@@ -92,13 +97,12 @@ mode - the mode of the QR Code (defaults to alphanumeric or byte_8bit, depending
   * :number
   * :alphanumeric
   * :byte_8bit
-  * :kanji
 ```
 
 #### Example
 
 ```ruby
-RQRCodeCore::QRCode.new("http://kyan.com", size: 1, level: :m, mode: :alphanumeric)
+RQRCodeCore::QRCode.new("http://kyan.com", size: 2, level: :m, mode: :byte_8bit)
 ```
 
 ## Development
@@ -127,6 +131,10 @@ $ ./bin/setup
 $ rake standard # check
 $ rake standard:fix # fix
 ```
+
+## Experimental
+
+On 64 bit systems when generating lots of QR Codes the lib will consume more memory than on a 32 bit systems during the internal "right shift zero fill" steps (this is expected). In tests though, it's shown that by forcing the lib to think you're on a 32 systems greatly reduces the memory footprint. This could of course have undesired consequences too! but if you're happy to try, you can use the `RQRCODE_CORE_ARCH_BITS` ENV to make this change. e.g `RQRCODE_CORE_ARCH_BITS=32`.
 
 ## Contributing
 

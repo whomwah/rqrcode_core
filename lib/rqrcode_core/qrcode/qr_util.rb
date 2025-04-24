@@ -57,9 +57,16 @@ module RQRCodeCore
     BITS_FOR_MODE = {
       QRMODE[:mode_number] => [10, 12, 14],
       QRMODE[:mode_alpha_numk] => [9, 11, 13],
-      QRMODE[:mode_8bit_byte] => [8, 16, 16],
-      QRMODE[:mode_kanji] => [8, 10, 12]
+      QRMODE[:mode_8bit_byte] => [8, 16, 16]
     }.freeze
+
+    # This value is used during the right shift zero fill step. It is
+    # auto set to 32 or 64 depending on the arch of your system running.
+    # 64 consumes a LOT more memory. In tests it's shown changing it to 32
+    # on 64 bit systems greatly reduces the memory footprint. You can use
+    # RQRCODE_CORE_ARCH_BITS to make this change but beware it may also
+    # have unintended consequences so use at your own risk.
+    ARCH_BITS = ENV.fetch("RQRCODE_CORE_ARCH_BITS", nil)&.to_i || 1.size * 8
 
     def self.max_size
       PATTERN_POSITION_TABLE.count
@@ -74,8 +81,8 @@ module RQRCodeCore
     end
 
     def self.rszf(num, count)
-      # zero fill right shift
-      (num >> count) & ((2**((num.size * 8) - count)) - 1)
+      # right shift zero fill
+      (num >> count) & ((1 << (ARCH_BITS - count)) - 1)
     end
 
     def self.get_bch_version(data)
@@ -247,7 +254,8 @@ module RQRCodeCore
         sum + col.count(true)
       end
 
-      ratio = dark_count / (modules.size * modules.size)
+      # Convert to float to prevent integer division
+      ratio = dark_count.to_f / (modules.size * modules.size)
       ratio_delta = (100 * ratio - 50).abs / 5
 
       ratio_delta * DEMERIT_POINTS_4
