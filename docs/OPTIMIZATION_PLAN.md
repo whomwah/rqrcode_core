@@ -58,31 +58,7 @@ See `test/benchmarks/ARCH_BITS_ANALYSIS.md` for detailed analysis.
 
 ---
 
-### Task #2: Optimize String Concatenation in Rendering
-**Priority**: Medium  
-**Status**: Pending  
-**File**: `lib/rqrcode_core/qrcode/qr_code.rb:178-199`
-
-**Goals**:
-- Replace string concatenation with more efficient methods
-- Use array join or string buffer approach
-- Benchmark rendering time before/after
-
-**Current Code Pattern**:
-```ruby
-cols = light * quiet_zone_size
-row.each do |col|
-  cols += (col ? dark : light)  # String concatenation in loop
-end
-```
-
-**Optimization Strategy**:
-- Build array of strings, then join once
-- Reduces temporary string allocations
-
----
-
-### Task #3: More Efficient Data Structures for Modules
+### Task #2: More Efficient Data Structures for Modules
 **Priority**: Medium  
 **Status**: Pending  
 **Files**: Various
@@ -100,7 +76,7 @@ end
 
 ## Phase 2: Speed Optimizations
 
-### Task #4: Profile Hot Paths with stackprof
+### Task #3: Profile Hot Paths with stackprof
 **Priority**: High  
 **Status**: Pending
 
@@ -119,7 +95,7 @@ end
 
 ---
 
-### Task #5: Cache Frequently Computed Values
+### Task #4: Cache Frequently Computed Values
 **Priority**: Medium  
 **Status**: Pending  
 **File**: `lib/rqrcode_core/qrcode/qr_util.rb:119-127`
@@ -136,7 +112,7 @@ end
 
 ---
 
-### Task #6: Optimize Inner Loops in Encoding
+### Task #5: Optimize Inner Loops in Encoding
 **Priority**: Medium  
 **Status**: Pending  
 **Files**:
@@ -154,7 +130,7 @@ end
 
 ---
 
-### Task #7: Memoization for Version Calculations
+### Task #6: Memoization for Version Calculations
 **Priority**: Low  
 **Status**: Pending
 
@@ -167,7 +143,7 @@ end
 
 ## Phase 3: Algorithm Improvements
 
-### Task #8: Review Polynomial Math Operations
+### Task #7: Review Polynomial Math Operations
 **Priority**: Medium  
 **Status**: Pending  
 **File**: `lib/rqrcode_core/qrcode/qr_polynomial.rb`
@@ -184,7 +160,7 @@ end
 
 ---
 
-### Task #9: Optimize Mask Pattern Calculation
+### Task #8: Optimize Mask Pattern Calculation
 **Priority**: Medium  
 **Status**: Pending  
 **File**: `lib/rqrcode_core/qrcode/qr_code.rb:286-300`
@@ -199,7 +175,7 @@ end
 
 ---
 
-### Task #10: Benchmark Alternative Implementations
+### Task #9: Benchmark Alternative Implementations
 **Priority**: Low  
 **Status**: Pending
 
@@ -218,10 +194,9 @@ Recommended order for maximum impact:
 1. ✅ **ARCH_BITS Investigation** - COMPLETE - Proven 70-76% memory savings + 2-4% speed boost
 2. **Profile with stackprof** - Identify actual bottlenecks before optimizing
 3. **Optimize identified hot paths** - Based on profiling results
-4. **String concatenation** - Relatively easy, clear benchmark target
-5. **Caching/memoization** - Progressive improvement
-6. **Data structures** - Larger refactor, do later
-7. **Algorithm improvements** - Most complex, do last
+4. **Caching/memoization** - Progressive improvement
+5. **Data structures** - Larger refactor, do later
+6. **Algorithm improvements** - Most complex, do last
 
 ---
 
