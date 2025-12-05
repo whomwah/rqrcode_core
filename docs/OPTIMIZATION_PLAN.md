@@ -58,28 +58,7 @@ See `test/benchmarks/ARCH_BITS_ANALYSIS.md` for detailed analysis.
 
 ---
 
-### Task #2: Reduce Temporary Array Allocations
-**Priority**: High  
-**Status**: Pending  
-**Files**: 
-- `lib/rqrcode_core/qrcode/qr_code.rb:448-506` (create_bytes)
-- `lib/rqrcode_core/qrcode/qr_polynomial.rb:28-38` (multiply)
-
-**Goals**:
-- Profile code to identify where most temporary arrays are created
-- Benchmark shows Integer (70-76%), Array (15-22%) of allocations
-- Focus on hot paths in create_bytes and polynomial operations
-- Consider reusing arrays or using in-place operations
-
-**Approach**:
-1. Use memory_profiler to identify specific allocation hotspots
-2. Look for opportunities to reuse arrays
-3. Consider using `Array#fill` instead of creating new arrays
-4. Benchmark each change individually
-
----
-
-### Task #3: Optimize String Concatenation in Rendering
+### Task #2: Optimize String Concatenation in Rendering
 **Priority**: Medium  
 **Status**: Pending  
 **File**: `lib/rqrcode_core/qrcode/qr_code.rb:178-199`
@@ -103,7 +82,7 @@ end
 
 ---
 
-### Task #4: More Efficient Data Structures for Modules
+### Task #3: More Efficient Data Structures for Modules
 **Priority**: Medium  
 **Status**: Pending  
 **Files**: Various
@@ -121,7 +100,7 @@ end
 
 ## Phase 2: Speed Optimizations
 
-### Task #5: Profile Hot Paths with stackprof
+### Task #4: Profile Hot Paths with stackprof
 **Priority**: High  
 **Status**: Pending
 
@@ -140,7 +119,7 @@ end
 
 ---
 
-### Task #6: Cache Frequently Computed Values
+### Task #5: Cache Frequently Computed Values
 **Priority**: Medium  
 **Status**: Pending  
 **File**: `lib/rqrcode_core/qrcode/qr_util.rb:119-127`
@@ -157,7 +136,7 @@ end
 
 ---
 
-### Task #7: Optimize Inner Loops in Encoding
+### Task #6: Optimize Inner Loops in Encoding
 **Priority**: Medium  
 **Status**: Pending  
 **Files**:
@@ -175,7 +154,7 @@ end
 
 ---
 
-### Task #8: Memoization for Version Calculations
+### Task #7: Memoization for Version Calculations
 **Priority**: Low  
 **Status**: Pending
 
@@ -188,7 +167,7 @@ end
 
 ## Phase 3: Algorithm Improvements
 
-### Task #9: Review Polynomial Math Operations
+### Task #8: Review Polynomial Math Operations
 **Priority**: Medium  
 **Status**: Pending  
 **File**: `lib/rqrcode_core/qrcode/qr_polynomial.rb`
@@ -205,7 +184,7 @@ end
 
 ---
 
-### Task #10: Optimize Mask Pattern Calculation
+### Task #9: Optimize Mask Pattern Calculation
 **Priority**: Medium  
 **Status**: Pending  
 **File**: `lib/rqrcode_core/qrcode/qr_code.rb:286-300`
@@ -220,7 +199,7 @@ end
 
 ---
 
-### Task #11: Benchmark Alternative Implementations
+### Task #10: Benchmark Alternative Implementations
 **Priority**: Low  
 **Status**: Pending
 
@@ -240,10 +219,9 @@ Recommended order for maximum impact:
 2. **Profile with stackprof** - Identify actual bottlenecks before optimizing
 3. **Optimize identified hot paths** - Based on profiling results
 4. **String concatenation** - Relatively easy, clear benchmark target
-5. **Array allocations** - Medium difficulty, significant impact
-6. **Caching/memoization** - Progressive improvement
-7. **Data structures** - Larger refactor, do later
-8. **Algorithm improvements** - Most complex, do last
+5. **Caching/memoization** - Progressive improvement
+6. **Data structures** - Larger refactor, do later
+7. **Algorithm improvements** - Most complex, do last
 
 ---
 
