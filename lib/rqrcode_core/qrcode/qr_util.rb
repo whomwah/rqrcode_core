@@ -60,12 +60,20 @@ module RQRCodeCore
       QRMODE[:mode_8bit_byte] => [8, 16, 16]
     }.freeze
 
-    # This value is used during the right shift zero fill step. It is
-    # auto set to 32 or 64 depending on the arch of your system running.
-    # 64 consumes a LOT more memory. In tests it's shown changing it to 32
-    # on 64 bit systems greatly reduces the memory footprint. You can use
-    # RQRCODE_CORE_ARCH_BITS to make this change but beware it may also
-    # have unintended consequences so use at your own risk.
+    # This value is used during the right shift zero fill step (rszf method).
+    # Auto-set to 32 or 64 depending on system architecture (1.size * 8).
+    #
+    # PERFORMANCE IMPACT (64-bit vs 32-bit on 64-bit systems):
+    # - Memory: 70-76% reduction (e.g., 37.91 MB → 9.10 MB for 100 small QR codes)
+    # - Speed: 2-4% faster with 32-bit
+    # - Objects: 85-87% fewer allocations
+    # - All tests pass with ARCH_BITS=32
+    #
+    # RECOMMENDATION: Use RQRCODE_CORE_ARCH_BITS=32 even on 64-bit systems
+    # for dramatic memory savings with no downsides. The QR code algorithm
+    # doesn't require 64-bit integers—32-bit is sufficient for all operations.
+    #
+    # See test/benchmarks/ARCH_BITS_ANALYSIS.md for detailed benchmark data.
     ARCH_BITS = ENV.fetch("RQRCODE_CORE_ARCH_BITS", nil)&.to_i || 1.size * 8
 
     def self.max_size

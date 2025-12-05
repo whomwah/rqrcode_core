@@ -10,11 +10,6 @@ begin
 
   task default: [:test, "standard:fix"]
 
-  desc "Run a simple benchmark (x10)"
-  task :benchmark do
-    ruby "test/benchmark_simple.rb"
-  end
-
   namespace :benchmark do
     desc "Run simple comparison benchmark"
     task :simple do
