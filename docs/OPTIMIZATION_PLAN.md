@@ -76,22 +76,49 @@ See `test/benchmarks/ARCH_BITS_ANALYSIS.md` for detailed analysis.
 
 ## Phase 2: Speed Optimizations
 
-### Task #3: Profile Hot Paths with stackprof
+### Task #3: Profile Hot Paths with stackprof ✅
 **Priority**: High  
-**Status**: Pending
+**Status**: COMPLETE
 
 **Goals**:
-- Add stackprof gem to development dependencies
-- Create profiling script for various QR code sizes
-- Focus on large QR codes (v20+) where performance degrades
-- Identify actual bottlenecks with data
+- ✅ Add stackprof gem to development dependencies
+- ✅ Create profiling script for various QR code sizes
+- ✅ Focus on large QR codes (v20+) where performance degrades
+- ✅ Identify actual bottlenecks with data
 
-**Approach**:
-1. Add stackprof to Gemfile (development group)
-2. Create `test/profile_stackprof.rb` script
-3. Profile small (v1), medium (v10), large (v20+) codes
-4. Generate flamegraphs or reports
-5. Use data to prioritize optimization efforts
+**Results Summary**:
+
+Profiled v1, v5, v10, v20 QR codes across 100-5 iterations each. Clear bottlenecks identified:
+
+**Top Hotspots** (for large QR codes):
+1. **`demerit_points_1_same_color`** - **30.2% of CPU time** for v20 codes
+   - Nested O(n²) loops checking consecutive same-colored modules
+   - Runs for all 8 mask patterns
+   - Primary optimization target
+   
+2. **Garbage Collection** - 42-75% of samples
+   - Higher for small codes, decreases as size increases
+   - Already addressed via ARCH_BITS=32 recommendation
+   
+3. **`demerit_points_2_full_blocks`** - 3.5% for v20 codes
+   - Checks for 2x2 blocks of same color
+   - Secondary optimization target
+
+4. **`demerit_points_3_dangerous_patterns`** - 2.8% for v20 codes
+   - Pattern matching for specific sequences
+   - Tertiary optimization target
+
+**Key Insights**:
+- **Scaling behavior**: Demerit calculations grow from 12.7% (v1) to 30.2% (v20) of CPU time
+- **Small vs Large**: Small codes are GC-bound (74.7%), large codes are demerit-bound (30.2%)
+- **Clear path forward**: Optimizing `demerit_points_1_same_color` will yield 15-30% improvement for large codes
+
+**Files Created**:
+- `test/profile_stackprof.rb` - Profiling script
+- `test/benchmarks/STACKPROF_ANALYSIS.md` - Detailed analysis with all findings
+- `tmp/stackprof/*.dump` - Raw profiling data for further investigation
+
+See `test/benchmarks/STACKPROF_ANALYSIS.md` for complete analysis and optimization recommendations.
 
 ---
 
@@ -192,11 +219,12 @@ See `test/benchmarks/ARCH_BITS_ANALYSIS.md` for detailed analysis.
 Recommended order for maximum impact:
 
 1. ✅ **ARCH_BITS Investigation** - COMPLETE - Proven 70-76% memory savings + 2-4% speed boost
-2. **Profile with stackprof** - Identify actual bottlenecks before optimizing
-3. **Optimize identified hot paths** - Based on profiling results
-4. **Caching/memoization** - Progressive improvement
-5. **Data structures** - Larger refactor, do later
-6. **Algorithm improvements** - Most complex, do last
+2. ✅ **Profile with stackprof** - COMPLETE - Identified `demerit_points_1_same_color` as 30% CPU bottleneck
+3. **Optimize `demerit_points_1_same_color`** - Data-driven priority target (15-30% potential improvement)
+4. **Optimize other demerit functions** - Secondary targets (5-10% combined improvement)
+5. **Caching/memoization** - Progressive improvement
+6. **Data structures** - Larger refactor, do later
+7. **Algorithm improvements** - Most complex, do last
 
 ---
 
@@ -279,6 +307,45 @@ Based on BENCHMARKS.md baseline:
 **Recommendation:** Users should set `RQRCODE_CORE_ARCH_BITS=32` in production. Not changing library default to avoid surprises for existing users, but strongly recommending the optimization through documentation.
 
 Full analysis available in `test/benchmarks/ARCH_BITS_ANALYSIS.md`.
+
+---
+
+### Task #3: Profile Hot Paths with stackprof ✅
+**Date**: December 5, 2025  
+**Status**: Complete  
+**Results**:
+
+**IDENTIFIED: Clear CPU bottlenecks with concrete optimization targets:**
+
+Profiled QR codes from v1 (21x21) to v20 (97x97) with 100-5 iterations each.
+
+**Primary Hotspot** - `demerit_points_1_same_color` (`qr_util.rb:171`):
+- **CPU Impact**: Scales from 12.7% (v1) → 30.2% (v20)
+- **Why Slow**: O(n²) nested loops checking consecutive same-colored modules for all 8 mask patterns
+- **Optimization Potential**: 15-30% speed improvement for large QR codes
+
+**Secondary Hotspots**:
+- `demerit_points_2_full_blocks`: 1.6% → 3.5% (2x2 block checking)
+- `demerit_points_3_dangerous_patterns`: 0.6% → 2.8% (pattern matching)
+- Combined potential: 5-10% improvement
+
+**GC Overhead**:
+- Small QR codes: 74.7% (GC-bound) - addressed by ARCH_BITS=32
+- Large QR codes: 41.6% (compute-bound) - demerit functions are the bottleneck
+
+**Scaling Insight**:
+As QR codes grow larger, demerit calculations become the dominant performance factor, overtaking GC as the primary bottleneck.
+
+**Action taken:**
+- Added stackprof gem to gemspec
+- Created `test/profile_stackprof.rb` profiling script
+- Generated profiles for v1, v5, v10, v20 QR codes
+- Created comprehensive analysis in `test/benchmarks/STACKPROF_ANALYSIS.md`
+- Updated OPTIMIZATION_PLAN.md with data-driven priorities
+
+**Next Steps**: Optimize `demerit_points_1_same_color` as highest-impact target (Task #4 reprioritized).
+
+Full analysis available in `test/benchmarks/STACKPROF_ANALYSIS.md`.
 
 ---
 

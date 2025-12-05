@@ -14,6 +14,7 @@
 
 ## Code Style
 - Follow [Standard Ruby](https://github.com/testdouble/standard) style guide (enforced via `rake standard`)
+- **IMPORTANT**: Always run `rake standard:fix` after making code changes to ensure consistent formatting
 - Use `frozen_string_literal: true` at top of all Ruby files
 - Ruby version: >= 3.0.0
 - Test framework: Minitest (`require "minitest/autorun"`)
