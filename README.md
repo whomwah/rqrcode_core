@@ -3,14 +3,14 @@
 
 # RQRCodeCore
 
-`rqrcode_core` is a library for encoding QR Codes in pure Ruby. It has a simple interface with all the standard qrcode options. It was originally adapted in 2008 from a Javascript library by [Kazuhiko Arase](https://github.com/kazuhikoarase).
+`rqrcode_core` is a library for encoding QR Codes in pure Ruby. It has a simple interface with all the standard QR Code options. It was originally adapted in 2008 from a Javascript library by [Kazuhiko Arase](https://github.com/kazuhikoarase).
 
 Features:
 
 - `rqrcode_core` is a Ruby only library. It requires no 3rd party libraries. Just Ruby!
 - It is an encoding library. You can't decode QR Codes with it.
 - The interface is simple and assumes you just want to encode a string into a QR Code, but also allows for encoding multiple segments.
-- QR Code is trademarked by Denso Wave inc.
+- QR Code is trade marked by Denso Wave inc.
 - Minimum Ruby version is `>= 3.0.0`
 
 `rqrcode_core` is the basis of the popular `rqrcode` gem [https://github.com/whomwah/rqrcode]. This gem allows you to generate different renderings of your QR Code, including `png`, `svg` and `ansi`.
@@ -132,7 +132,7 @@ $ rake standard # check
 $ rake standard:fix # fix
 ```
 
-## Performance Optimization
+## Performance Optimisation
 
 ### Reduce Memory Usage by 70-76%
 
@@ -166,13 +166,6 @@ RQRCODE_CORE_ARCH_BITS=32 ruby your_script.rb
 #### Why This Works
 
 The QR code algorithm doesn't require 64-bit integers for its bit manipulation operations—32-bit is sufficient for all calculations. By default, Ruby on 64-bit systems uses 64-bit integers, which causes unnecessary memory allocation during the internal "right shift zero fill" operations.
-
-#### Safety & Testing
-
-✅ All 108 test assertions pass with `ARCH_BITS=32`  
-✅ No speed penalty (actually faster)  
-✅ No correctness issues—QR codes scan properly  
-✅ Works across all QR code sizes (v1-v40) and error correction levels
 
 **Recommendation:** Use `RQRCODE_CORE_ARCH_BITS=32` for production workloads, especially when:
 - Generating QR codes in batch
