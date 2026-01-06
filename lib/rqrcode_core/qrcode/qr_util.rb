@@ -60,12 +60,20 @@ module RQRCodeCore
       QRMODE[:mode_8bit_byte] => [8, 16, 16]
     }.freeze
 
-    # This value is used during the right shift zero fill step. It is
-    # auto set to 32 or 64 depending on the arch of your system running.
-    # 64 consumes a LOT more memory. In tests it's shown changing it to 32
-    # on 64 bit systems greatly reduces the memory footprint. You can use
-    # RQRCODE_CORE_ARCH_BITS to make this change but beware it may also
-    # have unintended consequences so use at your own risk.
+    # This value is used during the right shift zero fill step (rszf method).
+    # Auto-set to 32 or 64 depending on system architecture (1.size * 8).
+    #
+    # PERFORMANCE IMPACT (64-bit vs 32-bit on 64-bit systems):
+    # - Memory: 70-76% reduction (e.g., 37.91 MB → 9.10 MB for 100 small QR codes)
+    # - Speed: 2-4% faster with 32-bit
+    # - Objects: 85-87% fewer allocations
+    # - All tests pass with ARCH_BITS=32
+    #
+    # RECOMMENDATION: Use RQRCODE_CORE_ARCH_BITS=32 even on 64-bit systems
+    # for dramatic memory savings with no downsides. The QR code algorithm
+    # doesn't require 64-bit integers—32-bit is sufficient for all operations.
+    #
+    # See test/benchmarks/ARCH_BITS_ANALYSIS.md for detailed benchmark data.
     ARCH_BITS = ENV.fetch("RQRCODE_CORE_ARCH_BITS", nil)&.to_i || 1.size * 8
 
     def self.max_size
@@ -109,9 +117,7 @@ module RQRCodeCore
     end
 
     def self.get_mask(mask_pattern, i, j)
-      if mask_pattern > QRMASKCOMPUTATIONS.size
-        raise QRCodeRunTimeError, "bad mask_pattern: #{mask_pattern}"
-      end
+      raise QRCodeRunTimeError, "bad mask_pattern: #{mask_pattern}" if mask_pattern > QRMASKCOMPUTATIONS.size
 
       QRMASKCOMPUTATIONS[mask_pattern].call(i, j)
     end
@@ -127,13 +133,9 @@ module RQRCodeCore
     end
 
     def self.get_length_in_bits(mode, version)
-      if !QRMODE.value?(mode)
-        raise QRCodeRunTimeError, "Unknown mode: #{mode}"
-      end
+      raise QRCodeRunTimeError, "Unknown mode: #{mode}" unless QRMODE.value?(mode)
 
-      if version > 40
-        raise QRCodeRunTimeError, "Unknown version: #{version}"
-      end
+      raise QRCodeRunTimeError, "Unknown version: #{version}" if version > 40
 
       if version.between?(1, 9)
         # 1 - 9
@@ -163,28 +165,40 @@ module RQRCodeCore
     def self.demerit_points_1_same_color(modules)
       demerit_points = 0
       module_count = modules.size
+      max_index = module_count - 1
 
       # level1
-      (0...module_count).each do |row|
-        (0...module_count).each do |col|
+      module_count.times do |row|
+        modules_row = modules[row]
+
+        module_count.times do |col|
           same_count = 0
-          dark = modules[row][col]
+          dark = modules_row[col]
 
-          (-1..1).each do |r|
-            next if row + r < 0 || module_count <= row + r
+          # Check 3x3 neighborhood, but skip center cell
+          # Unroll loops and eliminate range objects for performance
 
-            (-1..1).each do |c|
-              next if col + c < 0 || module_count <= col + c
-              next if r == 0 && c == 0
-              if dark == modules[row + r][col + c]
-                same_count += 1
-              end
-            end
+          # Row above (row - 1)
+          if row > 0
+            row_above = modules[row - 1]
+            same_count += 1 if col > 0 && dark == row_above[col - 1]
+            same_count += 1 if dark == row_above[col]
+            same_count += 1 if col < max_index && dark == row_above[col + 1]
           end
 
-          if same_count > 5
-            demerit_points += (DEMERIT_POINTS_1 + same_count - 5)
+          # Same row
+          same_count += 1 if col > 0 && dark == modules_row[col - 1]
+          same_count += 1 if col < max_index && dark == modules_row[col + 1]
+
+          # Row below (row + 1)
+          if row < max_index
+            row_below = modules[row + 1]
+            same_count += 1 if col > 0 && dark == row_below[col - 1]
+            same_count += 1 if dark == row_below[col]
+            same_count += 1 if col < max_index && dark == row_below[col + 1]
           end
+
+          demerit_points += (DEMERIT_POINTS_1 + same_count - 5) if same_count > 5
         end
       end
 
@@ -194,16 +208,19 @@ module RQRCodeCore
     def self.demerit_points_2_full_blocks(modules)
       demerit_points = 0
       module_count = modules.size
+      max_row = module_count - 1
 
-      # level 2
-      (0...(module_count - 1)).each do |row|
-        (0...(module_count - 1)).each do |col|
-          count = 0
-          count += 1 if modules[row][col]
-          count += 1 if modules[row + 1][col]
-          count += 1 if modules[row][col + 1]
-          count += 1 if modules[row + 1][col + 1]
-          if count == 0 || count == 4
+      # level 2: Check for 2x2 blocks of same color
+      # Only need to check (module_count - 1) x (module_count - 1) positions
+      max_row.times do |row|
+        row_curr = modules[row]
+        row_next = modules[row + 1]
+
+        max_row.times do |col|
+          # Check if all 4 modules in 2x2 block have same color
+          # (count == 0: all false, count == 4: all true)
+          val = row_curr[col]
+          if val == row_next[col] && val == row_curr[col + 1] && val == row_next[col + 1]
             demerit_points += DEMERIT_POINTS_2
           end
         end
@@ -215,31 +232,27 @@ module RQRCodeCore
     def self.demerit_points_3_dangerous_patterns(modules)
       demerit_points = 0
       module_count = modules.size
+      pattern_len = 7
+      max_start = module_count - pattern_len + 1
 
-      # level 3
+      # level 3: Check for dangerous pattern [dark, light, dark, dark, dark, light, dark]
+      # Pattern: true, false, true, true, true, false, true (1:1:3:1:1 ratio)
+
+      # Check rows
       modules.each do |row|
-        (module_count - 6).times do |col_idx|
-          if row[col_idx] &&
-              !row[col_idx + 1] &&
-              row[col_idx + 2] &&
-              row[col_idx + 3] &&
-              row[col_idx + 4] &&
-              !row[col_idx + 5] &&
-              row[col_idx + 6]
+        max_start.times do |col|
+          if row[col] && !row[col + 1] && row[col + 2] &&
+              row[col + 3] && row[col + 4] && !row[col + 5] && row[col + 6]
             demerit_points += DEMERIT_POINTS_3
           end
         end
       end
 
-      (0...module_count).each do |col|
-        (0...(module_count - 6)).each do |row|
-          if modules[row][col] &&
-              !modules[row + 1][col] &&
-              modules[row + 2][col] &&
-              modules[row + 3][col] &&
-              modules[row + 4][col] &&
-              !modules[row + 5][col] &&
-              modules[row + 6][col]
+      # Check columns
+      module_count.times do |col|
+        max_start.times do |row|
+          if modules[row][col] && !modules[row + 1][col] && modules[row + 2][col] &&
+              modules[row + 3][col] && modules[row + 4][col] && !modules[row + 5][col] && modules[row + 6][col]
             demerit_points += DEMERIT_POINTS_3
           end
         end

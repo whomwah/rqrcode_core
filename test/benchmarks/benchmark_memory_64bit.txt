@@ -1,0 +1,135 @@
+================================================================================
+RQRCode Core - Memory Profiling Benchmark
+================================================================================
+Ruby: 3.3.4 (arm64-darwin24)
+ARCH_BITS: 64
+================================================================================
+
+
+--- Single small QR (v1) ---
+Total allocated: 0.38 MB
+Total retained:  0.00 MB
+Objects allocated: 8740
+Objects retained:  0
+
+Top 3 allocations by class:
+  Integer: 0.29 MB
+  Array: 0.06 MB
+  Range: 0.03 MB
+
+--- Single medium QR (v5) ---
+Total allocated: 0.97 MB
+Total retained:  0.00 MB
+Objects allocated: 21264
+Objects retained:  0
+
+Top 3 allocations by class:
+  Integer: 0.67 MB
+  Array: 0.19 MB
+  Range: 0.09 MB
+
+--- Single large QR (v24) ---
+Total allocated: 8.53 MB
+Total retained:  0.00 MB
+Objects allocated: 179659
+Objects retained:  0
+
+Top 3 allocations by class:
+  Integer: 5.61 MB
+  Array: 1.91 MB
+  Range: 0.86 MB
+
+--- Batch: 100 small QR codes ---
+Total allocated: 37.91 MB
+Total retained:  0.00 MB
+Objects allocated: 872700
+Objects retained:  0
+
+Top 3 allocations by class:
+  Integer: 28.81 MB
+  Array: 5.88 MB
+  Range: 2.93 MB
+
+--- Batch: 10 large QR codes ---
+Total allocated: 85.32 MB
+Total retained:  0.00 MB
+Objects allocated: 1796590
+Objects retained:  0
+
+Top 3 allocations by class:
+  Integer: 56.13 MB
+  Array: 19.14 MB
+  Range: 8.64 MB
+
+--- Create only ---
+Total allocated: 37.91 MB
+Total retained:  0.00 MB
+Objects allocated: 872700
+Objects retained:  0
+
+Top 3 allocations by class:
+  Integer: 28.81 MB
+  Array: 5.88 MB
+  Range: 2.93 MB
+
+--- Create + render ---
+Total allocated: 40.27 MB
+Total retained:  0.00 MB
+Objects allocated: 919300
+Objects retained:  0
+
+Top 3 allocations by class:
+  Integer: 28.81 MB
+  Array: 5.92 MB
+  Range: 2.93 MB
+
+--- Numeric mode ---
+Total allocated: 38.36 MB
+Total retained:  0.00 MB
+Objects allocated: 884801
+Objects retained:  0
+
+Top 3 allocations by class:
+  Integer: 29.26 MB
+  Array: 5.85 MB
+  Range: 2.92 MB
+
+--- Alphanumeric mode ---
+Total allocated: 48.52 MB
+Total retained:  0.00 MB
+Objects allocated: 1078500
+Objects retained:  0
+
+Top 3 allocations by class:
+  Integer: 34.55 MB
+  Array: 9.00 MB
+  Range: 4.48 MB
+
+--- Byte mode ---
+Total allocated: 48.63 MB
+Total retained:  0.00 MB
+Objects allocated: 1081700
+Objects retained:  0
+
+Top 3 allocations by class:
+  Integer: 34.76 MB
+  Array: 8.98 MB
+  Range: 4.49 MB
+
+--- Multi-segment encoding ---
+Total allocated: 48.69 MB
+Total retained:  0.00 MB
+Objects allocated: 1081500
+Objects retained:  0
+
+Top 3 allocations by class:
+  Integer: 34.61 MB
+  Array: 9.04 MB
+  Range: 4.49 MB
+
+================================================================================
+Memory profiling complete!
+
+Note: To test ARCH_BITS=32 impact, run:
+  RQRCODE_CORE_ARCH_BITS=32 ruby test/benchmark_memory.rb
+================================================================================
