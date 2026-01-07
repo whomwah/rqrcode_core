@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-01-07
+
+- Bump minimum Ruby version to 3.2
 - Add comprehensive tests for QR code boundaries and encoding
 - Performance optimisations: 80-90% faster QR code generation across all sizes
   - Optimised demerit calculation functions (`demerit_points_1_same_color`, `demerit_points_2_full_blocks`, `demerit_points_3_dangerous_patterns`)
@@ -64,7 +67,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - fix `required_ruby_version` for Ruby 3 support
 
-[unreleased]: https://github.com/whomwah/rqrcode_core/compare/v2.0.1...HEAD
+[unreleased]: https://github.com/whomwah/rqrcode_core/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/whomwah/rqrcode_core/compare/v2.0.1...v2.1.0
 [2.0.1]: https://github.com/whomwah/rqrcode_core/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/whomwah/rqrcode_core/compare/v1.2.0...v2.0.0
 [1.2.0]: https://github.com/whomwah/rqrcode_core/compare/v1.1.0...v1.2.0

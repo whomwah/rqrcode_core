@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rqrcode_core (2.0.1)
+    rqrcode_core (2.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -88,7 +88,7 @@ CHECKSUMS
   rainbow (3.1.1) sha256=039491aa3a89f42efa1d6dec2fc4e62ede96eb6acd95e52f1ad581182b79bc6a
   rake (13.3.1) sha256=8c9e89d09f66a26a01264e7e3480ec0607f0c497a861ef16063604b1b08eb19c
   regexp_parser (2.11.3) sha256=ca13f381a173b7a93450e53459075c9b76a10433caadcb2f1180f2c741fc55a4
-  rqrcode_core (2.0.1)
+  rqrcode_core (2.1.0)
   rubocop (1.81.7) sha256=6fb5cc298c731691e2a414fe0041a13eb1beed7bab23aec131da1bcc527af094
   rubocop-ast (1.49.0) sha256=49c3676d3123a0923d333e20c6c2dbaaae2d2287b475273fddee0c61da9f71fd
   rubocop-performance (1.26.1) sha256=cd19b936ff196df85829d264b522fd4f98b6c89ad271fa52744a8c11b8f71834
