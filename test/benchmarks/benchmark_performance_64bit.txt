@@ -1,0 +1,120 @@
+/Users/duncan/.local/share/mise/installs/ruby/3.3.4/bin/ruby test/benchmark_performance.rb
+================================================================================
+RQRCode Core - Detailed Performance Benchmark (benchmark-ips)
+================================================================================
+Ruby: 3.3.4 (arm64-darwin24)
+ARCH_BITS: 64
+================================================================================
+
+
+--- By Data Size ---
+ruby 3.3.4 (2024-07-09 revision be1089c8ec) [arm64-darwin24]
+Warming up --------------------------------------
+          Small (v1)    15.000 i/100ms
+     Medium URL (v5)     4.000 i/100ms
+         Large (v24)     1.000 i/100ms
+Calculating -------------------------------------
+          Small (v1)    152.703 (± 0.7%) i/s    (6.55 ms/i) -    315.000 in   2.062952s
+     Medium URL (v5)     46.225 (± 0.0%) i/s   (21.63 ms/i) -     96.000 in   2.076890s
+         Large (v24)      4.770 (± 0.0%) i/s  (209.64 ms/i) -     10.000 in   2.096453s
+
+Comparison:
+          Small (v1):      152.7 i/s
+     Medium URL (v5):       46.2 i/s - 3.30x  slower
+         Large (v24):        4.8 i/s - 32.01x  slower
+
+
+--- By Encoding Mode ---
+ruby 3.3.4 (2024-07-09 revision be1089c8ec) [arm64-darwin24]
+Warming up --------------------------------------
+             Numeric    15.000 i/100ms
+        Alphanumeric    10.000 i/100ms
+                Byte    10.000 i/100ms
+Calculating -------------------------------------
+             Numeric    151.088 (± 1.3%) i/s    (6.62 ms/i) -    315.000 in   2.085212s
+        Alphanumeric    102.899 (± 1.9%) i/s    (9.72 ms/i) -    210.000 in   2.041462s
+                Byte    105.187 (± 1.0%) i/s    (9.51 ms/i) -    220.000 in   2.091581s
+
+Comparison:
+             Numeric:      151.1 i/s
+                Byte:      105.2 i/s - 1.44x  slower
+        Alphanumeric:      102.9 i/s - 1.47x  slower
+
+
+--- By QR Version (same data) ---
+ruby 3.3.4 (2024-07-09 revision be1089c8ec) [arm64-darwin24]
+Warming up --------------------------------------
+           Version 1    15.000 i/100ms
+           Version 5     4.000 i/100ms
+          Version 10     1.000 i/100ms
+          Version 20     1.000 i/100ms
+          Version 40     1.000 i/100ms
+Calculating -------------------------------------
+           Version 1    153.231 (± 0.7%) i/s    (6.53 ms/i) -    315.000 in   2.055745s
+           Version 5     46.388 (± 0.0%) i/s   (21.56 ms/i) -     96.000 in   2.069570s
+          Version 10     19.006 (± 0.0%) i/s   (52.62 ms/i) -     39.000 in   2.052087s
+          Version 20      6.499 (± 0.0%) i/s  (153.86 ms/i) -     13.000 in   2.000250s
+          Version 40      1.936 (± 0.0%) i/s  (516.52 ms/i) -      4.000 in   2.066094s
+
+Comparison:
+           Version 1:      153.2 i/s
+           Version 5:       46.4 i/s - 3.30x  slower
+          Version 10:       19.0 i/s - 8.06x  slower
+          Version 20:        6.5 i/s - 23.58x  slower
+          Version 40:        1.9 i/s - 79.15x  slower
+
+
+--- By Error Correction Level ---
+ruby 3.3.4 (2024-07-09 revision be1089c8ec) [arm64-darwin24]
+Warming up --------------------------------------
+       Level :l (7%)    15.000 i/100ms
+      Level :m (15%)    15.000 i/100ms
+      Level :q (25%)    15.000 i/100ms
+      Level :h (30%)    15.000 i/100ms
+Calculating -------------------------------------
+       Level :l (7%)    154.511 (± 0.6%) i/s    (6.47 ms/i) -    315.000 in   2.038729s
+      Level :m (15%)    156.390 (± 0.0%) i/s    (6.39 ms/i) -    315.000 in   2.014221s
+      Level :q (25%)    151.581 (± 0.0%) i/s    (6.60 ms/i) -    315.000 in   2.078119s
+      Level :h (30%)    152.958 (± 0.7%) i/s    (6.54 ms/i) -    315.000 in   2.059453s
+
+Comparison:
+      Level :m (15%):      156.4 i/s
+       Level :l (7%):      154.5 i/s - 1.01x  slower
+      Level :h (30%):      153.0 i/s - 1.02x  slower
+      Level :q (25%):      151.6 i/s - 1.03x  slower
+
+
+--- Creation vs Rendering ---
+ruby 3.3.4 (2024-07-09 revision be1089c8ec) [arm64-darwin24]
+Warming up --------------------------------------
+         Create only    15.000 i/100ms
+     Create + render    15.000 i/100ms
+         Render only    15.000 i/100ms
+Calculating -------------------------------------
+         Create only    153.164 (± 0.7%) i/s    (6.53 ms/i) -    315.000 in   2.056646s
+     Create + render    152.039 (± 0.7%) i/s    (6.58 ms/i) -    315.000 in   2.071869s
+         Render only    152.248 (± 0.7%) i/s    (6.57 ms/i) -    315.000 in   2.069014s
+
+Comparison:
+         Create only:      153.2 i/s
+         Render only:      152.2 i/s - same-ish: difference falls within error
+     Create + render:      152.0 i/s - same-ish: difference falls within error
+
+
+--- Multi-segment Encoding ---
+ruby 3.3.4 (2024-07-09 revision be1089c8ec) [arm64-darwin24]
+Warming up --------------------------------------
+      Single segment     7.000 i/100ms
+       Multi-segment    10.000 i/100ms
+Calculating -------------------------------------
+      Single segment     76.907 (± 1.3%) i/s   (13.00 ms/i) -    154.000 in   2.002709s
+       Multi-segment    103.345 (± 1.9%) i/s    (9.68 ms/i) -    210.000 in   2.032742s
+
+Comparison:
+       Multi-segment:      103.3 i/s
+      Single segment:       76.9 i/s - 1.34x  slower
+
+
+================================================================================
+Performance benchmark complete!
+================================================================================

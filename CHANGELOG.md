@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Add comprehensive tests for QR code boundaries and encoding
+- Performance optimisations: 80-90% faster QR code generation across all sizes
+  - Optimised demerit calculation functions (`demerit_points_1_same_color`, `demerit_points_2_full_blocks`, `demerit_points_3_dangerous_patterns`)
+  - Eliminated nested Range objects and redundant array lookups in hot paths
+  - Pre-computed frequently accessed values to reduce calculation overhead
+  - Large QR codes (v20) now generate in ~85ms vs ~154ms previously
+- Memory optimisation: 70-76% reduction when using `RQRCODE_CORE_ARCH_BITS=32`
+  - Single large QR (v24): 8.53 MB → 2.92 MB
+  - Batch generation (100x v1): 37.91 MB → 9.10 MB
+  - Also provides 2-4% speed improvement due to better cache locality
+- Add comprehensive benchmarking infrastructure with memory and performance profiling tools
+
 ## [2.0.1] - 2025-11-25
 
 - Update required_ruby_version to support >= rather than ~> ready for Ruby 4
