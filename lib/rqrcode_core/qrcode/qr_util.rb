@@ -88,8 +88,12 @@ module RQRCodeCore
       ((data << 10) | d) ^ G15_MASK
     end
 
+    RSZF_LIMIT = 1 << ARCH_BITS
+
     def self.rszf(num, count)
       # right shift zero fill
+      return num >> count if num >= 0 && num < RSZF_LIMIT
+
       (num >> count) & ((1 << (ARCH_BITS - count)) - 1)
     end
 
