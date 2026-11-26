@@ -168,6 +168,15 @@ class RQRCodeCore::BaseTest < Minitest::Test
     assert RQRCodeCore::QRCode.new("0", size: 1, level: :h)
   end
 
+  def test_rszf_zero_fills_outside_the_architecture_range
+    bits = RQRCodeCore::QRUtil::ARCH_BITS
+    assert_equal 0b101, RQRCodeCore::QRUtil.rszf(0b1011, 1)
+    assert_equal (1 << (bits - 1)) - 1, RQRCodeCore::QRUtil.rszf(-1, 1)
+    assert_equal 1 << (bits - 2), RQRCodeCore::QRUtil.rszf((1 << bits) | (1 << (bits - 1)), 1)
+    assert_equal 0, RQRCodeCore::QRUtil.rszf(1 << bits, 0)
+    assert_equal 0, RQRCodeCore::QRUtil.rszf(1, bits)
+  end
+
   def test_exceed_max_size
     assert_raises RQRCodeCore::QRCodeArgumentError do
       RQRCodeCore::QRCode.new("duncan", size: 41)
